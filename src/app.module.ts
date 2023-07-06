@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { ChatModule } from './chat/chat.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { BlogModule } from './blog/blog.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { MongooseModule } from '@nestjs/mongoose';
       dbName: 'whisker_doc',
     }),
     ChatModule,
+    BlogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
