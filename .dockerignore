@@ -1,0 +1,8 @@
+node_modules
+Dockerfile
+.gitignore
+.dockerignore
+package-lock.json
+yarn.lock
+docker-compose*
+.env

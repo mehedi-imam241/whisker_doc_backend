@@ -5,7 +5,8 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
-@WebSocketGateway(8080, { cors: true })
+
+@WebSocketGateway(parseInt(process.env.SOCKET_PORT), { cors: true })
 export class ChatGateway {
   @WebSocketServer()
   server: Server;
@@ -31,6 +32,7 @@ export class ChatGateway {
   handleDisconnect(client: Socket) {
     console.log('Client disconnected:', client.id);
   }
+
   @SubscribeMessage('message')
   handleMessage(client: any, payload: any): void {
     console.log('message', payload);

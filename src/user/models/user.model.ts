@@ -1,30 +1,36 @@
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Appointment } from '../../appointments/models/appointment.model';
 
 @ObjectType()
+@Entity()
 export class User {
-  @Field(() => String)
-  id: string;
+  constructor(fields?: Partial<User>) {
+    if (fields) {
+      Object.assign(this, fields);
+    }
+  }
 
   @Field(() => String)
+  @PrimaryGeneratedColumn('uuid')
+  _id: string;
+
+  @Field(() => String)
+  @Column()
   name: string;
 
   @Field(() => String)
+  @Column({ unique: true })
   email: string;
 
   @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
   avatar?: string;
 
-  @Field(() => Role)
-  role: Role;
-}
+  @Column({ type: 'varchar', length: 100 })
+  password: string;
 
-enum Role {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-  VET = 'VET',
-  PARAVET = 'PARAVET',
+  @Field(() => String)
+  @Column({ type: 'varchar', length: 10 })
+  role: string;
 }
-
-registerEnumType(Role, {
-  name: 'Role',
-});

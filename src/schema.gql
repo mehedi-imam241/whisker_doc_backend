@@ -2,6 +2,264 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type User {
+  _id: String!
+  name: String!
+  email: String!
+  avatar: String
+  role: String!
+}
+
+type SearchResponse {
+  Drug: String!
+  Use: String!
+}
+
+type Blog {
+  title: String!
+  body: String!
+  author: User
+}
+
+type ServerResponse {
+  message: String!
+}
+
+type LoginResponseDto {
+  user: User!
+  accessToken: String!
+}
+
+type plan {
+  id: String!
+  object: String!
+  active: Boolean!
+  amount: Float!
+}
+
+type StatusOutput {
+  id: String!
+  object: String!
+  currency: String!
+  current_period_end: Float!
+  current_period_start: Float!
+  customer: String!
+  plan: plan!
+}
+
+type Appointment {
+  _id: String!
+  approved: Boolean!
+  type: String!
+  date: DateTime!
+  startTime: String!
+  endTime: String!
+  petId: String!
+  ownerId: String!
+  vetId: String!
+  pet: Pet
+  owner: User
+  vet: User
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Pet {
+  _id: String!
+  name: String!
+  avatar: String
+  species: String!
+  breed: String!
+  gender: String!
+  age: Float!
+  weight: Float!
+  owner: User!
+  appointments: [Appointment!]!
+}
+
+type VetVerification {
+  _id: String!
+  vetId: String!
+  vet: User
+  certificateId: String!
+  certificateLink: String!
+  verified: Boolean!
+}
+
+type Review {
+  _id: String!
+  userId: String!
+  review: String!
+}
+
+type Medicine {
+  name: String!
+  dose: String!
+  duration: Float!
+}
+
+type Prescription {
+  _id: String!
+  createdAt: DateTime!
+  petId: String!
+  vetId: String!
+  symtoms: [String!]!
+  diseases: [String!]!
+  medicines: [Medicine!]!
+}
+
+type Slots {
+  _id: String!
+  starts_at: String!
+  ends_at: String!
+  occupiedByUser: String
+  dateScheduleId: String!
+  dateSchedule: Date_schedule
+}
+
+type Date_schedule {
+  _id: String!
+  date: DateTime!
+  homeServiceId: String!
+  homeService: HomeService
+  slots: [Slots!]
+}
+
+type HomeService {
+  _id: String!
+  vetId: String!
+  vet: User
+  date_schedule: [Date_schedule!]
+}
+
+type Symptoms {
+  _id: String!
+  species: String!
+  vetId: String!
+  verifiedBy: String
+  title: String!
+  article: String!
+}
+
 type Query {
-  author: String!
+  searchDrug(query: String!): [SearchResponse!]!
+  getVet(id: String!): User!
+  getVets(limit: Float!, skip: Float!): [User!]!
+  getBlogs(take: Float!, skip: Float!): [Blog!]!
+  getSubscriptionStatus: StatusOutput!
+  getAllPets: [Pet!]!
+  getAllAppointmentsOfVet: [Appointment!]!
+  getAllAppointmentsOfVetToday(type: String!): [Appointment!]!
+  getAppointmentOfPet(petId: String!): Appointment!
+  getVerificationRequestsAdmin(limit: Float!, skip: Float!): [VetVerification!]!
+  getVerificationStatus: ServerResponse!
+  getReviews(limit: Float!, skip: Float!): [Review!]!
+  getReviewsOfVet(limit: Float!, skip: Float!): [Review!]!
+  getPrescriptionByPetId(limit: Float!, skip: Float!, petId: String!): [Prescription!]!
+  getHomeServiceVets(limit: Float!, skip: Float!): [HomeService!]!
+  searchSymptoms(searchTerm: String!): [Symptoms!]!
+  getVerfiedSymptoms(limit: Float!, skip: Float!): [Symptoms!]!
+  getUnverfiedSymptoms(limit: Float!, skip: Float!): [Symptoms!]!
+}
+
+type Mutation {
+  createBlog(input: CreateBlogInput!): ServerResponse!
+  login(loginInput: LoginInput!): LoginResponseDto!
+  register(input: RegisterInput!): User!
+  createSubscription: ServerResponse!
+  resumeSubscription: ServerResponse!
+  createPet(input: CreatePetInput!): ServerResponse!
+  createAppointment(input: CreateAppointmentInput!): ServerResponse!
+  approveAppointment(appointmentId: String!): ServerResponse!
+  cancelAppointment(appointmentId: String!): ServerResponse!
+  createVerificationRequest(input: VerificationRequestInput!): ServerResponse!
+  verifyVet(vetId: String!): ServerResponse!
+  createReview(review: String!): ServerResponse!
+  createReviewOfVet(review: String!, vetId: String!): ServerResponse!
+  createPrescription(input: CreatePrescription!): Prescription!
+  JoinHomeService: ServerResponse!
+  bookSlots(slotId: String!, dateScheduleId: String!): ServerResponse!
+  verifySymptoms(symptomsId: String!): ServerResponse!
+  createSymptoms(input: CreateSymptomsInput!): ServerResponse!
+}
+
+input CreateBlogInput {
+  title: String!
+  body: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input RegisterInput {
+  name: String!
+  email: String!
+  avatar: String
+  password: String!
+  role: Role!
+}
+
+enum Role {
+  ADMIN
+  USER
+  VET
+  PARAVET
+}
+
+input CreatePetInput {
+  name: String!
+  avatar: String
+  species: String!
+  breed: String!
+  gender: Gender!
+  age: Float!
+  weight: Float!
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+input CreateAppointmentInput {
+  date: DateTime!
+  startTime: String!
+  endTime: String!
+  type: AppointmentType!
+  petId: String!
+  vetId: String!
+}
+
+enum AppointmentType {
+  ONLINE
+  INPERSON
+}
+
+input VerificationRequestInput {
+  certificateId: String!
+  certificateLink: String!
+}
+
+input CreatePrescription {
+  petId: String!
+  symtoms: [String!]!
+  diseases: [String!]!
+  medicines: [MedicineInput!]!
+}
+
+input MedicineInput {
+  name: String!
+  dose: String!
+  duration: Float!
+}
+
+input CreateSymptomsInput {
+  species: String!
+  title: String!
+  article: String!
 }

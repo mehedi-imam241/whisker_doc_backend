@@ -1,0 +1,89 @@
+version: "3.9"
+services:
+  mongo_db:
+    container_name: mongo_db_container
+    image: mongo:latest
+    restart: always
+    ports:
+      - "4042:27017"
+    volumes:
+      - mongo-db:/data/db
+
+  postgres:
+    #    container_name: postgres_container
+    image: postgres:latest
+    restart: always
+    ports:
+      - "4045:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.6.2
+    container_name: es01
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data01:/usr/share/elasticsearch/data
+    ports:
+      - "4043:9200"
+    restart: always
+
+  kibana:
+    container_name: whisker_doc_kibana
+    image: docker.elastic.co/kibana/kibana:8.6.2
+    environment:
+      SERVER_NAME: kibana.example.org
+      ELASTICSEARCH_HOSTS: '["http://es01:9200"]'
+    ports:
+      - "4044:5601"
+  
+  
+  
+  whisker-doc-backend:
+    container_name: whisker_doc_backend
+    build: .
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "4040:4040"
+      - "4041:8080"
+    environment:
+      JWT_SECRET: dLIbSGaqBxxN2t22yaPZJ5fE2VEBrlUvrAx79YaDPZHD4aOgKP76as
+      HOST_NAME: 0.0.0.0
+      PORT: 4040
+      SOCKET_PORT: 8080
+      #we can pass the service name or the container name of mongodb
+      DB_HOST: mongodb://mongo_db:27017
+      DB_NAME: whisker_doc
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: whisker_doc
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      ELASTICSEARCH_NODE: http://es01:9200
+      STRIPE_API_SECRET_KEY: sk_test_51NUQquCEAeaWr2ZsveKyrldkwO1NhHd9lRf32pW3aktvZpPoYBfTovAV9G9WRGw6baMnYVxH08RUsmZrBcsvW1wy00i57TqFPz
+
+    depends_on:
+      - mongo_db
+      - es01
+      - postgres
+
+volumes:
+  mongo-db:
+  data01:
+  postgres-data:
+
+# docker directory er terminal e zawar jonne
+# docker compose exec <service name> bash
+
+# console er output live dekhar jonne
+# docker logs -f <container name>
+
