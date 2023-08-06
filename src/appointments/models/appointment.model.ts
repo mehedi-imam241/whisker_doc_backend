@@ -22,9 +22,9 @@ export class Appointment {
   @PrimaryGeneratedColumn('uuid')
   _id: string;
 
-  @Field(() => Boolean)
-  @Column({ default: false, type: Boolean })
-  approved: boolean;
+  // @Field(() => Boolean)
+  // @Column({ default: false, type: Boolean })
+  // approved: boolean;
 
   @Field(() => String)
   @Column({ type: 'varchar', length: 10 })
@@ -34,13 +34,9 @@ export class Appointment {
   @Column({ type: Date })
   date: Date;
 
-  @Field(() => String)
-  @Column({ type: 'varchar', length: 10 })
-  startTime: string;
-
-  @Field(() => String)
-  @Column({ type: 'varchar', length: 10 })
-  endTime: string;
+  @Field(() => Number)
+  @Column({ type: 'int' })
+  slot_id: number;
 
   @Field(() => String)
   @Column({ type: 'varchar' })

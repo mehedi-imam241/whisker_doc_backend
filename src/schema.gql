@@ -50,11 +50,9 @@ type StatusOutput {
 
 type Appointment {
   _id: String!
-  approved: Boolean!
   type: String!
   date: DateTime!
-  startTime: String!
-  endTime: String!
+  slot_id: Float!
   petId: String!
   ownerId: String!
   vetId: String!
@@ -79,6 +77,25 @@ type Pet {
   weight: Float!
   owner: User!
   appointments: [Appointment!]!
+}
+
+type CreateAppointmentSlot {
+  idx: Float!
+}
+
+type CreateAllAppointmentSlots {
+  slots: [CreateAppointmentSlot!]
+}
+
+type Appointment_Slot {
+  _id: String!
+  slots: CreateAllAppointmentSlots
+  vetId: String!
+  vet: User
+}
+
+type ArrayOfNumbersResponse {
+  ids: [Float!]
 }
 
 type VetVerification {
@@ -159,6 +176,8 @@ type Query {
   getAllAppointmentsOfVet: [Appointment!]!
   getAllAppointmentsOfVetToday(type: String!): [Appointment!]!
   getAppointmentOfPet(petId: String!): Appointment!
+  getAppointmentSlotsOfVet(vetId: String!): Appointment_Slot
+  FindSlotsThatAreNotBooked(date: DateTime!, vetId: String!): ArrayOfNumbersResponse
   getVerificationRequestsAdmin(limit: Float!, skip: Float!): [VetVerification!]!
   getVerificationStatus: ServerResponse!
   getReviews(limit: Float!, skip: Float!): [Review!]!
@@ -177,16 +196,16 @@ type Mutation {
   createSubscription: ServerResponse!
   resumeSubscription: ServerResponse!
   createPet(input: CreatePetInput!): ServerResponse!
-  createAppointment(input: CreateAppointmentInput!): ServerResponse!
-  approveAppointment(appointmentId: String!): ServerResponse!
+  bookAppointment(input: BookAppointmentInput!): ServerResponse!
   cancelAppointment(appointmentId: String!): ServerResponse!
+  CreateSlots(input: CreateAllAppointmentSlotsInput!): ServerResponse!
+  updateAppointmentSlot(input: CreateAllAppointmentSlotsInput!): ServerResponse!
   createVerificationRequest(input: VerificationRequestInput!): ServerResponse!
   verifyVet(vetId: String!): ServerResponse!
   createReview(review: String!): ServerResponse!
   createReviewOfVet(review: String!, vetId: String!): ServerResponse!
   createPrescription(input: CreatePrescription!): Prescription!
   JoinHomeService: ServerResponse!
-  bookSlots(slotId: String!, dateScheduleId: String!): ServerResponse!
   verifySymptoms(symptomsId: String!): ServerResponse!
   createSymptoms(input: CreateSymptomsInput!): ServerResponse!
 }
@@ -231,10 +250,9 @@ enum Gender {
   FEMALE
 }
 
-input CreateAppointmentInput {
+input BookAppointmentInput {
   date: DateTime!
-  startTime: String!
-  endTime: String!
+  slot_id: Float!
   type: AppointmentType!
   petId: String!
   vetId: String!
@@ -243,6 +261,14 @@ input CreateAppointmentInput {
 enum AppointmentType {
   ONLINE
   INPERSON
+}
+
+input CreateAllAppointmentSlotsInput {
+  slots: [CreateAppointmentSlotInput!]!
+}
+
+input CreateAppointmentSlotInput {
+  idx: Float!
 }
 
 input VerificationRequestInput {

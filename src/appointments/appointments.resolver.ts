@@ -4,7 +4,13 @@ import { Appointment } from './models/appointment.model';
 import { JwtAuthGuard } from '../auth/jwtAuth.guard';
 import { UseGuards } from '@nestjs/common';
 import { ServerResponse } from '../shared/operation.response';
-import { CreateAppointmentInput } from './dtos/createAppointment.input';
+import { BookAppointmentInput } from './dtos/bookAppointment.input';
+import {
+  CreateAllAppointmentSlotsInput,
+  CreateAppointmentSlotInput,
+} from './dtos/create_slot.input';
+import { Appointment_Slot } from './models/appointment_slot.model';
+import { ArrayOfNumbersResponse } from '../shared/ArrayOfNumbers.response';
 
 @Resolver()
 export class AppointmentsResolver {
@@ -36,21 +42,21 @@ export class AppointmentsResolver {
 
   @Mutation(() => ServerResponse)
   @UseGuards(JwtAuthGuard)
-  async createAppointment(
-    @Args('input') input: CreateAppointmentInput,
+  async bookAppointment(
+    @Args('input') input: BookAppointmentInput,
     @Context() ctx,
   ): Promise<ServerResponse> {
-    return await this.appointmentsService.create(input, ctx.req.user);
+    return await this.appointmentsService.bookAppointment(input, ctx.req.user);
   }
 
-  @Mutation(() => ServerResponse)
-  @UseGuards(JwtAuthGuard)
-  async approveAppointment(
-    @Args('appointmentId') appointmentId: string,
-    @Context() ctx,
-  ): Promise<ServerResponse> {
-    return await this.appointmentsService.approve(appointmentId, ctx.req.user);
-  }
+  // @Mutation(() => ServerResponse)
+  // @UseGuards(JwtAuthGuard)
+  // async approveAppointment(
+  //   @Args('appointmentId') appointmentId: string,
+  //   @Context() ctx,
+  // ): Promise<ServerResponse> {
+  //   return await this.appointmentsService.approve(appointmentId, ctx.req.user);
+  // }
 
   @Mutation(() => ServerResponse)
   @UseGuards(JwtAuthGuard)
@@ -61,6 +67,47 @@ export class AppointmentsResolver {
     return await this.appointmentsService.deleteAppointment(
       appointmentId,
       ctx.req.user,
+    );
+  }
+
+  @Mutation(() => ServerResponse)
+  @UseGuards(JwtAuthGuard)
+  async CreateSlots(
+    @Args('input') input: CreateAllAppointmentSlotsInput,
+    @Context() ctx,
+  ) {
+    return await this.appointmentsService.createSlots(
+      input,
+      ctx.req.user.userId,
+    );
+  }
+
+  @Query(() => Appointment_Slot, { nullable: true })
+  @UseGuards(JwtAuthGuard)
+  async getAppointmentSlotsOfVet(@Args('vetId') vetId: string) {
+    return await this.appointmentsService.getAllSlotsOfVet(vetId);
+  }
+
+  @Mutation(() => ServerResponse)
+  @UseGuards(JwtAuthGuard)
+  async updateAppointmentSlot(
+    @Args('input') input: CreateAllAppointmentSlotsInput,
+    @Context() ctx,
+  ) {
+    return await this.appointmentsService.updateSlot(
+      input,
+      ctx.req.user.userId,
+    );
+  }
+
+  @Query(() => ArrayOfNumbersResponse, { nullable: true })
+  async FindSlotsThatAreNotBooked(
+    @Args('date') date: Date,
+    @Args('vetId') vetId: string,
+  ): Promise<ArrayOfNumbersResponse> {
+    return await this.appointmentsService.findSlotsThatAreNotBooked(
+      date,
+      vetId,
     );
   }
 }

@@ -15,19 +15,19 @@ export class HomeServiceResolver {
     return this.homeServiceService.JoinHomeService(ctx.req.user.userId);
   }
 
-  @Mutation(() => ServerResponse)
-  @UseGuards(JwtAuthGuard)
-  async bookSlots(
-    @Args('slotId') slotId: string,
-    @Args('dateScheduleId') dateScheduleId: string,
-    @Context() ctx,
-  ) {
-    return this.homeServiceService.bookSlot(
-      slotId,
-      ctx.req.user.userId,
-      dateScheduleId,
-    );
-  }
+  // @Mutation(() => ServerResponse)
+  // @UseGuards(JwtAuthGuard)
+  // async bookSlots(
+  //   @Args('slotId') slotId: string,
+  //   @Args('dateScheduleId') dateScheduleId: string,
+  //   @Context() ctx,
+  // ) {
+  //   return this.homeServiceService.bookSlot(
+  //     slotId,
+  //     ctx.req.user.userId,
+  //     dateScheduleId,
+  //   );
+  // }
 
   @Query(() => [HomeService])
   @UseGuards(JwtAuthGuard)

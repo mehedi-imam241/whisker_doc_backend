@@ -32,6 +32,8 @@ import { Slots } from './home_service/models/slots.model';
 import { Date_schedule } from './home_service/models/date_schedule.model';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SchedulerModule } from './scheduler/scheduler.module';
+import { Appointment_Slot } from './appointments/models/appointment_slot.model';
+import { Updated_Appointment_Slot } from './appointments/models/updated_appointment_slot';
 
 @Module({
   imports: [
@@ -63,6 +65,8 @@ import { SchedulerModule } from './scheduler/scheduler.module';
         HomeService,
         Date_schedule,
         Slots,
+        Appointment_Slot,
+        Updated_Appointment_Slot,
       ],
     }),
     MongooseModule.forRoot(process.env.DB_HOST, {

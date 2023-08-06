@@ -1,17 +1,12 @@
 import { Field, InputType, registerEnumType } from '@nestjs/graphql';
-import { Prop } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
 
 @InputType()
-export class CreateAppointmentInput {
+export class BookAppointmentInput {
   @Field(() => Date)
   date: Date;
 
-  @Field(() => String)
-  startTime: string;
-
-  @Field(() => String)
-  endTime: string;
+  @Field(() => Number)
+  slot_id: number;
 
   @Field(() => AppointmentType)
   type: AppointmentType;
