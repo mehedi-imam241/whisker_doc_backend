@@ -5,6 +5,6 @@ export class VerificationRequestInput {
   @Field(() => String)
   certificateId: string;
 
-  @Field(() => String)
-  certificateLink: string;
+  @Field(() => String, { nullable: true })
+  certificateLink?: string;
 }

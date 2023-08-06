@@ -63,11 +63,20 @@ services:
       #we can pass the service name or the container name of mongodb
       DB_HOST: mongodb://mongo_db:27017
       DB_NAME: whisker_doc
+      #      POSTGRES_USER: postgres
+      #      POSTGRES_PASSWORD: 123456
+      #      POSTGRES_DB: whisker_doc
+      #      POSTGRES_HOST: postgres
+      #      POSTGRES_PORT: 5432
+
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: whisker_doc
-      POSTGRES_HOST: postgres
+      POSTGRES_PASSWORD: asif_shahriar
+      POSTGRES_DB: postgres
+      POSTGRES_HOST: db.vuvqdveucdpqnivmmwpt.supabase.co
       POSTGRES_PORT: 5432
+
+
+
       ELASTICSEARCH_NODE: http://es01:9200
       STRIPE_API_SECRET_KEY: sk_test_51NUQquCEAeaWr2ZsveKyrldkwO1NhHd9lRf32pW3aktvZpPoYBfTovAV9G9WRGw6baMnYVxH08RUsmZrBcsvW1wy00i57TqFPz
 

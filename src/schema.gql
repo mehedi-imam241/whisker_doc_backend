@@ -247,7 +247,7 @@ enum AppointmentType {
 
 input VerificationRequestInput {
   certificateId: String!
-  certificateLink: String!
+  certificateLink: String
 }
 
 input CreatePrescription {
