@@ -17,6 +17,7 @@ export class Blog {
     }
   }
 
+  @Field(() => String)
   @PrimaryGeneratedColumn('uuid')
   _id: string;
 

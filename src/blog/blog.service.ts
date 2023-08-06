@@ -26,6 +26,24 @@ export class BlogService {
     return this.blogRepository.find({
       take: count,
       skip: skip,
+      relations: {
+        author: true,
+      },
+    });
+  }
+
+  async findCount(): Promise<number> {
+    return Math.ceil((await this.blogRepository.count()) / 10);
+  }
+
+  async findOne(id: string): Promise<Blog> {
+    return this.blogRepository.findOne({
+      where: {
+        _id: id,
+      },
+      relations: {
+        author: true,
+      },
     });
   }
 }

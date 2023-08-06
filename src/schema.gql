@@ -16,6 +16,7 @@ type SearchResponse {
 }
 
 type Blog {
+  _id: String!
   title: String!
   body: String!
   author: User
@@ -148,9 +149,13 @@ type Query {
   searchDrug(query: String!): [SearchResponse!]!
   getVet(id: String!): User!
   getVets(limit: Float!, skip: Float!): [User!]!
+  getVetsCount: Float!
   getBlogs(take: Float!, skip: Float!): [Blog!]!
+  getBlogById(id: String!): Blog!
+  countPages: Float!
   getSubscriptionStatus: StatusOutput!
   getAllPets: [Pet!]!
+  getPetById(id: String!): Pet!
   getAllAppointmentsOfVet: [Appointment!]!
   getAllAppointmentsOfVetToday(type: String!): [Appointment!]!
   getAppointmentOfPet(petId: String!): Appointment!

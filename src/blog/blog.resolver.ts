@@ -38,4 +38,14 @@ export class BlogResolver {
   ): Promise<Blog[]> {
     return this.blogService.findAll(take, skip);
   }
+
+  @Query(() => Blog)
+  async getBlogById(@Args('id') id: string): Promise<Blog> {
+    return this.blogService.findOne(id);
+  }
+
+  @Query(() => Number)
+  async countPages(): Promise<number> {
+    return this.blogService.findCount();
+  }
 }

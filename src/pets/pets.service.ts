@@ -23,8 +23,13 @@ export class PetsService {
     });
   }
 
-  async findById(_id: string): Promise<Pet> {
-    return this.petRepository.findOneBy({ _id });
+  async findById(_id: string, userId: string): Promise<Pet> {
+    return await this.petRepository.findOneBy({
+      _id,
+      owner: {
+        _id: userId,
+      },
+    });
   }
 
   async create(input: CreatePetInput, ownerId: string) {

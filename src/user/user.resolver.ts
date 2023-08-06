@@ -38,4 +38,9 @@ export class UserResolver {
   async getVets(@Args('limit') limit: number, @Args('skip') skip: number) {
     return await this.userService.getVets(limit, skip);
   }
+
+  @Query(() => Number)
+  async getVetsCount() {
+    return Math.ceil((await this.userService.getVetsCount()) / 10);
+  }
 }

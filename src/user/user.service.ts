@@ -44,6 +44,14 @@ export class UserService {
     });
   }
 
+  async getVetsCount() {
+    return await this.userRepository.count({
+      where: {
+        role: 'VET',
+      },
+    });
+  }
+
   async getVet(id: string) {
     return await this.userRepository.findOneBy({
       _id: id,

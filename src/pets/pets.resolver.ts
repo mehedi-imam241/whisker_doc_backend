@@ -25,4 +25,10 @@ export class PetsResolver {
   ): Promise<ServerResponse> {
     return await this.petsService.create(input, ctx.req.user.userId);
   }
+
+  @Query(() => Pet)
+  @UseGuards(JwtAuthGuard)
+  async getPetById(@Args('id') id: string, @Context() ctx): Promise<Pet> {
+    return await this.petsService.findById(id, ctx.req.user.userId);
+  }
 }
