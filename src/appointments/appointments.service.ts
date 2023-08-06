@@ -3,11 +3,12 @@ import { Appointment } from './models/appointment.model';
 import { BookAppointmentInput } from './dtos/bookAppointment.input';
 import { ServerResponse } from '../shared/operation.response';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
+import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { CreateAllAppointmentSlotsInput } from './dtos/create_slot.input';
 import { Appointment_Slot } from './models/appointment_slot.model';
 import { Updated_Appointment_Slot } from './models/updated_appointment_slot';
 import { ArrayOfNumbersResponse } from '../shared/ArrayOfNumbers.response';
+import { Query } from '@nestjs/graphql';
 
 @Injectable()
 export class AppointmentsService {
@@ -159,12 +160,26 @@ export class AppointmentsService {
       });
 
       await this.appointmentSlotRepository.save(newSlots);
+
       response.message = 'Slots created successfully.';
     } catch (e) {
       console.log('e', e);
     }
 
     return response;
+  }
+
+  async isSlotsCreated(vetId: string) {
+    const count = await this.appointmentSlotRepository.count({
+      where: {
+        vetId,
+      },
+    });
+
+    if (count > 0) {
+      return { message: `1` } as ServerResponse;
+    }
+    return { message: `0` } as ServerResponse;
   }
 
   async getAllSlotsOfVet(vetId: string): Promise<Appointment_Slot> {
@@ -187,7 +202,7 @@ export class AppointmentsService {
         date: new Date(
           today.getFullYear(),
           today.getMonth(),
-          today.getDate() + 2,
+          today.getDate() + 3,
           0,
           0,
           0,
@@ -198,7 +213,7 @@ export class AppointmentsService {
 
       console.log('newSlots', newSlots);
 
-      await this.appointmentSlotRepository.save(newSlots);
+      await this.updatedAppointmentSlotRepository.save(newSlots);
       response.message = 'Slots created successfully.';
     } catch (e) {
       console.log('e', e);
@@ -288,16 +303,31 @@ export class AppointmentsService {
       },
     });
 
+    const slotsOfVets2 = await this.updatedAppointmentSlotRepository.findOne({
+      where: {
+        vetId,
+        date: LessThanOrEqual(startOfToday),
+      },
+    });
+
+    if (slotsOfVets2) {
+      const AllowableSlotsOfVet = slotsOfVets2.slots.slots.map(
+        (slot) => slot.idx,
+      );
+      const slots = updatedAppointmentSlots.map((slot) => slot.slot_id);
+      const result = findElementsNotInArray(AllowableSlotsOfVet, slots);
+      console.log(result); // Output: [1, 2, 5]
+
+      return { ids: result } as ArrayOfNumbersResponse;
+    }
+
     const slotsOfVets = await this.appointmentSlotRepository.findOne({
       where: {
         vetId,
       },
-      // select: {
-      //   slots: true,
-      // }
     });
 
-    console.log('slotsOfVets', slotsOfVets.slots.slots);
+    // console.log('slotsOfVets', slotsOfVets.slots.slots);
 
     if (!slotsOfVets) {
       return { ids: [] } as ArrayOfNumbersResponse;

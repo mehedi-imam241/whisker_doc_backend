@@ -176,6 +176,7 @@ type Query {
   getAllAppointmentsOfVet: [Appointment!]!
   getAllAppointmentsOfVetToday(type: String!): [Appointment!]!
   getAppointmentOfPet(petId: String!): Appointment!
+  IsSlotCreated: ServerResponse!
   getAppointmentSlotsOfVet(vetId: String!): Appointment_Slot
   FindSlotsThatAreNotBooked(date: DateTime!, vetId: String!): ArrayOfNumbersResponse
   getVerificationRequestsAdmin(limit: Float!, skip: Float!): [VetVerification!]!

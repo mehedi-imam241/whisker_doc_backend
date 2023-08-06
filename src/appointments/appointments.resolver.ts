@@ -76,10 +76,17 @@ export class AppointmentsResolver {
     @Args('input') input: CreateAllAppointmentSlotsInput,
     @Context() ctx,
   ) {
+    console.log(input);
     return await this.appointmentsService.createSlots(
       input,
       ctx.req.user.userId,
     );
+  }
+
+  @Query(() => ServerResponse)
+  @UseGuards(JwtAuthGuard)
+  async IsSlotCreated(@Context() ctx) {
+    return await this.appointmentsService.isSlotsCreated(ctx.req.user.userId);
   }
 
   @Query(() => Appointment_Slot, { nullable: true })
