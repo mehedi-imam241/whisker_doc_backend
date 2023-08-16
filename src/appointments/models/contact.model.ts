@@ -3,15 +3,15 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../../user/models/user.model';
 
 @ObjectType()
 @Entity()
-export class VetVerification {
-  constructor(fields?: Partial<VetVerification>) {
+export class ContactModel {
+  constructor(fields?: Partial<ContactModel>) {
     if (fields) {
       Object.assign(this, fields);
     }
@@ -22,23 +22,15 @@ export class VetVerification {
   _id: string;
 
   @Field(() => String)
+  @Column({ type: 'varchar' })
+  zoomLink: string;
+
+  @Field(() => String)
   @Column({ type: 'varchar', unique: true })
   vetId: string;
 
   @Field(() => User, { nullable: true })
-  @OneToOne(() => User)
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'vetId' })
   vet: User;
-
-  @Field(() => String)
-  @Column({ unique: true })
-  certificateId: string;
-
-  // @Field(() => String, { nullable: true })
-  // @Column()
-  // certificateLink: string;
-
-  @Field(() => String)
-  @Column({ type: 'varchar' })
-  degree: string;
 }

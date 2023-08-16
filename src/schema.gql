@@ -56,6 +56,7 @@ type Appointment {
   petId: String!
   ownerId: String!
   vetId: String!
+  zoomLink: String
   pet: Pet
   owner: User
   vet: User
@@ -94,6 +95,13 @@ type Appointment_Slot {
   vet: User
 }
 
+type ContactModel {
+  _id: String!
+  zoomLink: String!
+  vetId: String!
+  vet: User
+}
+
 type ArrayOfNumbersResponse {
   ids: [Float!]
 }
@@ -103,8 +111,7 @@ type VetVerification {
   vetId: String!
   vet: User
   certificateId: String!
-  certificateLink: String!
-  verified: Boolean!
+  degree: String!
 }
 
 type Review {
@@ -120,11 +127,13 @@ type Medicine {
 }
 
 type Prescription {
-  _id: String!
+  _id: Float!
   createdAt: DateTime!
   petId: String!
+  pet: Pet
   vetId: String!
-  symtoms: [String!]!
+  vet: User
+  symptoms: [String!]!
   diseases: [String!]!
   medicines: [Medicine!]!
 }
@@ -177,10 +186,13 @@ type Query {
   getAllAppointmentsOfVetToday(type: String!): [Appointment!]!
   getAppointmentOfPet(petId: String!): Appointment!
   IsSlotCreated: ServerResponse!
-  getAppointmentSlotsOfVet(vetId: String!): Appointment_Slot
+  getAppointmentSlotsOfVet: Appointment_Slot
   FindSlotsThatAreNotBooked(date: DateTime!, vetId: String!): ArrayOfNumbersResponse
-  getVerificationRequestsAdmin(limit: Float!, skip: Float!): [VetVerification!]!
-  getVerificationStatus: ServerResponse!
+  getAppointmentSlotsOfMe: [Appointment!]
+  getAppointmentDetails(apptId: String!): Appointment
+  getZoomLink: ContactModel
+  getMyVerificationInfo: VetVerification!
+  getVetVerificationInfo(vetId: String!): VetVerification!
   getReviews(limit: Float!, skip: Float!): [Review!]!
   getReviewsOfVet(limit: Float!, skip: Float!): [Review!]!
   getPrescriptionByPetId(limit: Float!, skip: Float!, petId: String!): [Prescription!]!
@@ -201,8 +213,8 @@ type Mutation {
   cancelAppointment(appointmentId: String!): ServerResponse!
   CreateSlots(input: CreateAllAppointmentSlotsInput!): ServerResponse!
   updateAppointmentSlot(input: CreateAllAppointmentSlotsInput!): ServerResponse!
-  createVerificationRequest(input: VerificationRequestInput!): ServerResponse!
-  verifyVet(vetId: String!): ServerResponse!
+  updateZoomLink(link: String!): ServerResponse!
+  UpdateVerification(input: VerificationRequestInput!): ServerResponse!
   createReview(review: String!): ServerResponse!
   createReviewOfVet(review: String!, vetId: String!): ServerResponse!
   createPrescription(input: CreatePrescription!): Prescription!
@@ -274,12 +286,12 @@ input CreateAppointmentSlotInput {
 
 input VerificationRequestInput {
   certificateId: String!
-  certificateLink: String
+  degree: String!
 }
 
 input CreatePrescription {
   petId: String!
-  symtoms: [String!]!
+  symptoms: [String!]!
   diseases: [String!]!
   medicines: [MedicineInput!]!
 }

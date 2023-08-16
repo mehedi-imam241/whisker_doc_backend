@@ -1,8 +1,14 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
 import { Field, ObjectType } from '@nestjs/graphql';
-
-export type PrescriptionDocument = HydratedDocument<Prescription>;
+import { Pet } from 'src/pets/models/pet.model';
+import { User } from 'src/user/models/user.model';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @ObjectType()
 export class Medicine {
@@ -15,33 +21,49 @@ export class Medicine {
 }
 
 @ObjectType()
-@Schema({ timestamps: true })
+@Entity()
 export class Prescription {
-  @Field(() => String)
-  _id: string;
+  constructor(fields?: Partial<Prescription>) {
+    if (fields) {
+      Object.assign(this, fields);
+    }
+  }
+
+  @Field(() => Number)
+  @PrimaryGeneratedColumn('increment')
+  _id: number;
 
   @Field(() => Date)
+  @CreateDateColumn()
   createdAt: Date;
 
   @Field(() => String)
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Pet' })
+  @Column({ type: 'varchar' })
   petId: string;
 
+  @Field(() => Pet, { nullable: true })
+  @ManyToOne(() => Pet)
+  @JoinColumn({ name: 'petId' })
+  pet: Pet;
+
   @Field(() => String)
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Column({ type: 'varchar' })
   vetId: string;
 
-  @Field(() => [String])
-  @Prop()
-  symtoms: string[];
+  @Field(() => User, { nullable: true })
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'vetId' })
+  vet: User;
 
   @Field(() => [String])
-  @Prop()
+  @Column('text', { array: true })
+  symptoms: string[];
+
+  @Field(() => [String])
+  @Column('text', { array: true })
   diseases: string[];
 
   @Field(() => [Medicine])
-  @Prop()
+  @Column('jsonb')
   medicines: Medicine[];
 }
-
-export const PrescriptionSchema = SchemaFactory.createForClass(Prescription);

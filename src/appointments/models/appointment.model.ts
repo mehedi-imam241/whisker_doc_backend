@@ -50,6 +50,9 @@ export class Appointment {
   @Column({ type: 'varchar' })
   vetId: string;
 
+  @Field(() => String, { nullable: true })
+  zoomLink: string;
+
   @Field(() => Pet, { nullable: true })
   @ManyToOne(() => Pet, (pet) => pet.appointments)
   @JoinColumn({ name: 'petId' })

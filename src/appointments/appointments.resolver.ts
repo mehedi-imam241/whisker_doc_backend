@@ -11,6 +11,7 @@ import {
 } from './dtos/create_slot.input';
 import { Appointment_Slot } from './models/appointment_slot.model';
 import { ArrayOfNumbersResponse } from '../shared/ArrayOfNumbers.response';
+import { ContactModel } from './models/contact.model';
 
 @Resolver()
 export class AppointmentsResolver {
@@ -91,8 +92,8 @@ export class AppointmentsResolver {
 
   @Query(() => Appointment_Slot, { nullable: true })
   @UseGuards(JwtAuthGuard)
-  async getAppointmentSlotsOfVet(@Args('vetId') vetId: string) {
-    return await this.appointmentsService.getAllSlotsOfVet(vetId);
+  async getAppointmentSlotsOfVet(@Context() ctx) {
+    return await this.appointmentsService.getAllSlotsOfVet(ctx.req.user.userId);
   }
 
   @Mutation(() => ServerResponse)
@@ -115,6 +116,33 @@ export class AppointmentsResolver {
     return await this.appointmentsService.findSlotsThatAreNotBooked(
       date,
       vetId,
+    );
+  }
+
+  @Query(() => [Appointment], { nullable: true })
+  @UseGuards(JwtAuthGuard)
+  async getAppointmentSlotsOfMe(@Context() ctx) {
+    return await this.appointmentsService.findAllOfUser(ctx.req.user.userId);
+  }
+
+  @Query(() => Appointment, { nullable: true })
+  @UseGuards(JwtAuthGuard)
+  async getAppointmentDetails(@Args('apptId') apptId: string) {
+    return await this.appointmentsService.findDetailsOfAppointment(apptId);
+  }
+
+  @Query(() => ContactModel, { nullable: true })
+  @UseGuards(JwtAuthGuard)
+  async getZoomLink(@Context() ctx) {
+    return await this.appointmentsService.getZoomLinkOfVet(ctx.req.user.userId);
+  }
+
+  @Mutation(() => ServerResponse)
+  @UseGuards(JwtAuthGuard)
+  async updateZoomLink(@Args('link') link: string, @Context() ctx) {
+    return await this.appointmentsService.updateZoomLinkOfVet(
+      ctx.req.user.userId,
+      link,
     );
   }
 }

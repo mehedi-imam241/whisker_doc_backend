@@ -19,7 +19,7 @@ export class CreatePrescription {
   petId: string;
 
   @Field(() => [String])
-  symtoms: string[];
+  symptoms: string[];
 
   @Field(() => [String])
   diseases: string[];

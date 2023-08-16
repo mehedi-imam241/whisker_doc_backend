@@ -1,32 +1,50 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { Prescription } from './models/prescription.model';
 import { CreatePrescription } from './dtos/prescription.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { LessThanOrEqual, Repository } from 'typeorm';
 
 @Injectable()
 export class PrescriptionService {
   constructor(
-    @InjectModel(Prescription.name)
-    private prescriptionModel: Model<Prescription>,
+    @InjectRepository(Prescription)
+    private PrescriptionRepository: Repository<Prescription>,
   ) {}
 
   async createPrescription(
     createPrescriptionDto: CreatePrescription,
     vetId: string,
   ) {
-    const newPrescription = new this.prescriptionModel({
+    const newPrescription = new Prescription({
       ...createPrescriptionDto,
       vetId: vetId,
     });
-    return await newPrescription.save();
+    // console.log(newPrescription);
+    return await this.PrescriptionRepository.save(newPrescription);
   }
 
   async getPrescriptionByPetId(limit: number, skip: number, petId: string) {
-    return await this.prescriptionModel
-      .find({ petId: petId })
-      .limit(limit)
-      .skip(skip)
-      .exec();
+    const today = new Date();
+    const endOfToday = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      23,
+      59,
+      59,
+    );
+
+    return await this.PrescriptionRepository.find({
+      where: {
+        petId: petId,
+        createdAt: LessThanOrEqual(endOfToday),
+      },
+      relations: {
+        pet: true,
+        vet: true,
+      },
+      take: limit,
+      skip: skip,
+    });
   }
 }

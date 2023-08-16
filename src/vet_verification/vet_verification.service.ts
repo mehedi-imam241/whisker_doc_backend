@@ -12,79 +12,105 @@ export class VetVerificationService {
     private vetVerificationRepository: Repository<VetVerification>,
   ) {}
 
-  async createVerificationRequest(input: VerificationRequestInput, user: any) {
-    const response = new ServerResponse();
-    try {
-      if (user.role !== 'VET') {
-        throw new Error('You are not a vet');
-      }
-      const newVerificationRequest = new VetVerification({
-        ...input,
-        vetId: user.userId,
-      });
-      await this.vetVerificationRepository.save(newVerificationRequest);
-      if (!newVerificationRequest) {
-        throw new Error('Error creating verification request');
-      }
+  // async createVerificationRequest(input: VerificationRequestInput, user: any) {
+  //   const response = new ServerResponse();
+  //   try {
+  //     if (user.role !== 'VET') {
+  //       throw new Error('You are not a vet');
+  //     }
+  //     const newVerificationRequest = new VetVerification({
+  //       ...input,
+  //       vetId: user.userId,
+  //     });
+  //     await this.vetVerificationRepository.save(newVerificationRequest);
+  //     if (!newVerificationRequest) {
+  //       throw new Error('Error creating verification request');
+  //     }
+  //
+  //     response.message = 'Verification request created successfully';
+  //   } catch (e) {
+  //     console.log(e);
+  //     response.message = e.message;
+  //   }
+  //
+  //   return response;
+  // }
 
-      response.message = 'Verification request created successfully';
-    } catch (e) {
-      console.log(e);
-      response.message = e.message;
-    }
+  // async getVerificationRequestsAdmin(limit: number, skip: number, user: any) {
+  //   return await this.vetVerificationRepository.find({
+  //     where: {
+  //       verified: false,
+  //     },
+  //     take: limit,
+  //     skip: skip,
+  //   });
+  // }
 
-    return response;
-  }
+  // async verifyVet(verificationId: string, user: any) {
+  //   const response = new ServerResponse();
+  //   try {
+  //     const verificationRequest = await this.vetVerificationRepository.update(
+  //       {
+  //         _id: verificationId,
+  //       },
+  //       {
+  //         verified: true,
+  //       },
+  //     );
+  //     if (!verificationRequest) {
+  //       throw new Error('Error verifying vet');
+  //     }
+  //     response.message = 'Vet verified successfully';
+  //   } catch (e) {
+  //     response.message = e.message;
+  //   }
+  //
+  //   return response;
+  // }
 
-  async getVerificationRequestsAdmin(limit: number, skip: number, user: any) {
-    return await this.vetVerificationRepository.find({
-      where: {
-        verified: false,
-      },
-      take: limit,
-      skip: skip,
+  // async getVerificationStatus(vetId: any) {
+  //   const response = new ServerResponse();
+  //   try {
+  //     const verificationRequest =
+  //       await this.vetVerificationRepository.findOneBy({
+  //         vetId: vetId,
+  //       });
+  //     if (!verificationRequest) {
+  //       throw new Error('No verification request found');
+  //     }
+  //     response.message = verificationRequest.verified
+  //       ? 'Verified'
+  //       : 'Not verified';
+  //   } catch (e) {
+  //     response.message = e.message;
+  //   }
+  //
+  //   return response;
+  // }
+
+  async updateVerification(input: VerificationRequestInput, vetId: string) {
+    const verification = await this.vetVerificationRepository.findOneBy({
+      vetId: vetId,
     });
-  }
-
-  async verifyVet(verificationId: string, user: any) {
-    const response = new ServerResponse();
-    try {
-      const verificationRequest = await this.vetVerificationRepository.update(
-        {
-          _id: verificationId,
-        },
-        {
-          verified: true,
-        },
-      );
-      if (!verificationRequest) {
-        throw new Error('Error verifying vet');
-      }
-      response.message = 'Vet verified successfully';
-    } catch (e) {
-      response.message = e.message;
+    if (!verification) {
+      const request = new VetVerification({
+        ...input,
+        vetId: vetId,
+      });
+      await this.vetVerificationRepository.save(request);
+      return { message: 'Information added successfully' } as ServerResponse;
     }
 
-    return response;
+    await this.vetVerificationRepository.save({
+      ...verification,
+      ...input,
+    });
+    return { message: 'Information updated successfully' } as ServerResponse;
   }
 
-  async getVerificationStatus(vetId: any) {
-    const response = new ServerResponse();
-    try {
-      const verificationRequest =
-        await this.vetVerificationRepository.findOneBy({
-          vetId: vetId,
-        });
-      if (!verificationRequest) {
-        throw new Error('No verification request found');
-      }
-      response.message = verificationRequest.verified
-        ? 'Verified'
-        : 'Not verified';
-    } catch (e) {
-      response.message = e.message;
-    }
-
-    return response;
+  async getVerification(vetId: string) {
+    return await this.vetVerificationRepository.findOneBy({
+      vetId: vetId,
+    });
   }
 }

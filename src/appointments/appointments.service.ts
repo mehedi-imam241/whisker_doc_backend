@@ -9,6 +9,7 @@ import { Appointment_Slot } from './models/appointment_slot.model';
 import { Updated_Appointment_Slot } from './models/updated_appointment_slot';
 import { ArrayOfNumbersResponse } from '../shared/ArrayOfNumbers.response';
 import { Query } from '@nestjs/graphql';
+import { ContactModel } from './models/contact.model';
 
 @Injectable()
 export class AppointmentsService {
@@ -19,6 +20,8 @@ export class AppointmentsService {
     private appointmentSlotRepository: Repository<Appointment_Slot>,
     @InjectRepository(Updated_Appointment_Slot)
     private updatedAppointmentSlotRepository: Repository<Updated_Appointment_Slot>,
+    @InjectRepository(ContactModel)
+    private contactRepository: Repository<ContactModel>,
   ) {}
 
   async findAllOfVet(user: any): Promise<Appointment[]> {
@@ -62,6 +65,58 @@ export class AppointmentsService {
       });
     }
     return [];
+  }
+
+  async findAllOfUser(userId: string): Promise<Appointment[]> {
+    const today = new Date();
+    const startOfToday = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      0,
+      0,
+      0,
+    );
+
+    return await this.appointmentRepository.find({
+      where: {
+        ownerId: userId,
+        date: MoreThanOrEqual(startOfToday),
+      },
+      relations: {
+        pet: true,
+        vet: true,
+      },
+    });
+  }
+
+  async findDetailsOfAppointment(apptId: string): Promise<Appointment> {
+    const res = await this.appointmentRepository.findOne({
+      where: {
+        _id: apptId,
+      },
+      relations: {
+        pet: true,
+        vet: true,
+      },
+    });
+
+    if (res.type === 'ONLINE') {
+      const contactInfo = await this.contactRepository.findOne({
+        where: {
+          vetId: res.vetId,
+        },
+        select: {
+          zoomLink: true,
+        },
+      });
+
+      if (!contactInfo) return res;
+
+      res.zoomLink = contactInfo.zoomLink;
+    }
+
+    return res;
   }
 
   async findOneOfPet(petId: string, user: any): Promise<any> {
@@ -198,6 +253,12 @@ export class AppointmentsService {
     response.message = 'Slots creation failed.';
     const today = new Date();
     try {
+      const oldSlots = await this.updatedAppointmentSlotRepository.findOne({
+        where: {
+          vetId,
+        },
+      });
+
       const newSlots = new Updated_Appointment_Slot({
         date: new Date(
           today.getFullYear(),
@@ -211,9 +272,10 @@ export class AppointmentsService {
         vetId,
       });
 
-      console.log('newSlots', newSlots);
-
-      await this.updatedAppointmentSlotRepository.save(newSlots);
+      await this.updatedAppointmentSlotRepository.save({
+        ...oldSlots,
+        ...newSlots,
+      });
       response.message = 'Slots created successfully.';
     } catch (e) {
       console.log('e', e);
@@ -342,6 +404,37 @@ export class AppointmentsService {
 
     // const result = getValuesNotInArrayInRange(slots, 0, 12);
     // console.log(result);
+  }
+
+  async getZoomLinkOfVet(vetId: string) {
+    return await this.contactRepository.findOne({
+      where: {
+        vetId,
+      },
+    });
+  }
+
+  async updateZoomLinkOfVet(vetId: string, zoomLink: string) {
+    const contact = await this.contactRepository.findOne({
+      where: {
+        vetId,
+      },
+    });
+
+    if (!contact) {
+      await this.contactRepository.save({
+        vetId,
+        zoomLink,
+      });
+      return { message: 'Zoom Link added' } as ServerResponse;
+    }
+
+    await this.contactRepository.save({
+      ...contact,
+      zoomLink,
+    });
+
+    return { message: 'Zoom link updated successfully' } as ServerResponse;
   }
 }
 

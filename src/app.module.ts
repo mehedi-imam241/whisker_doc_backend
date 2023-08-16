@@ -34,6 +34,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { Appointment_Slot } from './appointments/models/appointment_slot.model';
 import { Updated_Appointment_Slot } from './appointments/models/updated_appointment_slot';
+import { ContactModel } from './appointments/models/contact.model';
+import { Prescription } from './prescription/models/prescription.model';
 
 @Module({
   imports: [
@@ -67,6 +69,8 @@ import { Updated_Appointment_Slot } from './appointments/models/updated_appointm
         Slots,
         Appointment_Slot,
         Updated_Appointment_Slot,
+        ContactModel,
+        Prescription,
       ],
     }),
     MongooseModule.forRoot(process.env.DB_HOST, {
