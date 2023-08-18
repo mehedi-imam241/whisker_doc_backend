@@ -9,9 +9,18 @@ import {
 import { User } from '../../user/models/user.model';
 
 @ObjectType()
+export class VetLocation {
+  @Field(() => Number)
+  lat: number;
+
+  @Field(() => Number)
+  lng: number;
+}
+
+@ObjectType()
 @Entity()
-export class VetVerification {
-  constructor(fields?: Partial<VetVerification>) {
+export class VetInfo {
+  constructor(fields?: Partial<VetInfo>) {
     if (fields) {
       Object.assign(this, fields);
     }
@@ -30,6 +39,10 @@ export class VetVerification {
   @JoinColumn({ name: 'vetId' })
   vet: User;
 
+  @Field(() => VetLocation)
+  @Column({ type: 'jsonb' })
+  location: VetLocation;
+
   @Field(() => String)
   @Column({ unique: true })
   certificateId: string;
@@ -41,4 +54,8 @@ export class VetVerification {
   @Field(() => String)
   @Column({ type: 'varchar' })
   degree: string;
+
+  @Field(() => String)
+  @Column({ type: 'varchar' })
+  zoomLink: string;
 }

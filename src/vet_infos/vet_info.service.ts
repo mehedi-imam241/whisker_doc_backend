@@ -1,28 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { VetVerification } from './models/vet_verification.model';
-import { VerificationRequestInput } from './dtos/VerificationRequest.intput';
+import { VetInfo } from './models/vet_info.model';
+import { VetInfoInput } from './dtos/vet_info.input';
 import { ServerResponse } from '../shared/operation.response';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class VetVerificationService {
+export class VetInfoService {
   constructor(
-    @InjectRepository(VetVerification)
-    private vetVerificationRepository: Repository<VetVerification>,
+    @InjectRepository(VetInfo)
+    private VetInfoRepository: Repository<VetInfo>,
   ) {}
 
-  // async createVerificationRequest(input: VerificationRequestInput, user: any) {
+  // async createVerificationRequest(input: VetInfoInput, user: any) {
   //   const response = new ServerResponse();
   //   try {
   //     if (user.role !== 'VET') {
   //       throw new Error('You are not a vet');
   //     }
-  //     const newVerificationRequest = new VetVerification({
+  //     const newVerificationRequest = new VetInfo({
   //       ...input,
   //       vetId: user.userId,
   //     });
-  //     await this.vetVerificationRepository.save(newVerificationRequest);
+  //     await this.VetInfoRepository.save(newVerificationRequest);
   //     if (!newVerificationRequest) {
   //       throw new Error('Error creating verification request');
   //     }
@@ -37,7 +37,7 @@ export class VetVerificationService {
   // }
 
   // async getVerificationRequestsAdmin(limit: number, skip: number, user: any) {
-  //   return await this.vetVerificationRepository.find({
+  //   return await this.VetInfoRepository.find({
   //     where: {
   //       verified: false,
   //     },
@@ -49,7 +49,7 @@ export class VetVerificationService {
   // async verifyVet(verificationId: string, user: any) {
   //   const response = new ServerResponse();
   //   try {
-  //     const verificationRequest = await this.vetVerificationRepository.update(
+  //     const verificationRequest = await this.VetInfoRepository.update(
   //       {
   //         _id: verificationId,
   //       },
@@ -72,7 +72,7 @@ export class VetVerificationService {
   //   const response = new ServerResponse();
   //   try {
   //     const verificationRequest =
-  //       await this.vetVerificationRepository.findOneBy({
+  //       await this.VetInfoRepository.findOneBy({
   //         vetId: vetId,
   //       });
   //     if (!verificationRequest) {
@@ -88,28 +88,28 @@ export class VetVerificationService {
   //   return response;
   // }
 
-  async updateVerification(input: VerificationRequestInput, vetId: string) {
-    const verification = await this.vetVerificationRepository.findOneBy({
+  async updateVetInfo(input: VetInfoInput, vetId: string) {
+    const verification = await this.VetInfoRepository.findOneBy({
       vetId: vetId,
     });
     if (!verification) {
-      const request = new VetVerification({
+      const request = new VetInfo({
         ...input,
         vetId: vetId,
       });
-      await this.vetVerificationRepository.save(request);
+      await this.VetInfoRepository.save(request);
       return { message: 'Information added successfully' } as ServerResponse;
     }
 
-    await this.vetVerificationRepository.save({
+    await this.VetInfoRepository.save({
       ...verification,
       ...input,
     });
     return { message: 'Information updated successfully' } as ServerResponse;
   }
 
-  async getVerification(vetId: string) {
-    return await this.vetVerificationRepository.findOneBy({
+  async getVetInfo(vetId: string) {
+    return await this.VetInfoRepository.findOneBy({
       vetId: vetId,
     });
   }

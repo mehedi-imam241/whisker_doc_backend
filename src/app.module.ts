@@ -14,7 +14,7 @@ import { PetsModule } from './pets/pets.module';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { SearchModule } from './search_drug/search.module';
 import * as process from 'process';
-import { VetVerificationModule } from './vet_verification/vet_verification.module';
+import { VetInfoModule } from './vet_infos/vet_info.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { ReviewModule } from './review/review.module';
 import { ReviewVetsModule } from './review_vets/review_vets.module';
@@ -26,7 +26,7 @@ import { Pet } from './pets/models/pet.model';
 import { User } from './user/models/user.model';
 import { Appointment } from './appointments/models/appointment.model';
 import { Blog } from './blog/models/blog.model';
-import { VetVerification } from './vet_verification/models/vet_verification.model';
+import { VetInfo } from './vet_infos/models/vet_info.model';
 import { HomeService } from './home_service/models/home_service.model';
 import { Slots } from './home_service/models/slots.model';
 import { Date_schedule } from './home_service/models/date_schedule.model';
@@ -34,7 +34,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { Appointment_Slot } from './appointments/models/appointment_slot.model';
 import { Updated_Appointment_Slot } from './appointments/models/updated_appointment_slot';
-import { ContactModel } from './appointments/models/contact.model';
+import { ContactObject } from './appointments/dtos/contact.model';
 import { Prescription } from './prescription/models/prescription.model';
 
 @Module({
@@ -63,13 +63,13 @@ import { Prescription } from './prescription/models/prescription.model';
         Pet,
         Appointment,
         Blog,
-        VetVerification,
+        VetInfo,
         HomeService,
         Date_schedule,
         Slots,
         Appointment_Slot,
         Updated_Appointment_Slot,
-        ContactModel,
+        ContactObject,
         Prescription,
       ],
     }),
@@ -84,7 +84,7 @@ import { Prescription } from './prescription/models/prescription.model';
     PetsModule,
     AppointmentsModule,
     SearchModule,
-    VetVerificationModule,
+    VetInfoModule,
     SubscriptionModule,
     ReviewModule,
     ReviewVetsModule,

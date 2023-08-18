@@ -95,23 +95,23 @@ type Appointment_Slot {
   vet: User
 }
 
-type ContactModel {
+type VetLocation {
+  lat: Float!
+  lng: Float!
+}
+
+type VetInfo {
   _id: String!
-  zoomLink: String!
   vetId: String!
   vet: User
+  location: VetLocation!
+  certificateId: String!
+  degree: String!
+  zoomLink: String!
 }
 
 type ArrayOfNumbersResponse {
   ids: [Float!]
-}
-
-type VetVerification {
-  _id: String!
-  vetId: String!
-  vet: User
-  certificateId: String!
-  degree: String!
 }
 
 type Review {
@@ -190,9 +190,8 @@ type Query {
   FindSlotsThatAreNotBooked(date: DateTime!, vetId: String!): ArrayOfNumbersResponse
   getAppointmentSlotsOfMe: [Appointment!]
   getAppointmentDetails(apptId: String!): Appointment
-  getZoomLink: ContactModel
-  getMyVerificationInfo: VetVerification!
-  getVetVerificationInfo(vetId: String!): VetVerification!
+  getMyInfo: VetInfo!
+  getVetInfo(vetId: String!): VetInfo
   getReviews(limit: Float!, skip: Float!): [Review!]!
   getReviewsOfVet(limit: Float!, skip: Float!): [Review!]!
   getPrescriptionByPetId(limit: Float!, skip: Float!, petId: String!): [Prescription!]!
@@ -213,8 +212,7 @@ type Mutation {
   cancelAppointment(appointmentId: String!): ServerResponse!
   CreateSlots(input: CreateAllAppointmentSlotsInput!): ServerResponse!
   updateAppointmentSlot(input: CreateAllAppointmentSlotsInput!): ServerResponse!
-  updateZoomLink(link: String!): ServerResponse!
-  UpdateVerification(input: VerificationRequestInput!): ServerResponse!
+  UpdateVetInfo(input: VetInfoInput!): ServerResponse!
   createReview(review: String!): ServerResponse!
   createReviewOfVet(review: String!, vetId: String!): ServerResponse!
   createPrescription(input: CreatePrescription!): Prescription!
@@ -284,9 +282,16 @@ input CreateAppointmentSlotInput {
   idx: Float!
 }
 
-input VerificationRequestInput {
+input VetInfoInput {
+  location: VetLocationInput!
   certificateId: String!
+  zoomLink: String!
   degree: String!
+}
+
+input VetLocationInput {
+  lat: Float!
+  lng: Float!
 }
 
 input CreatePrescription {

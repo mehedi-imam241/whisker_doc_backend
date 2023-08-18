@@ -11,7 +11,7 @@ import {
 } from './dtos/create_slot.input';
 import { Appointment_Slot } from './models/appointment_slot.model';
 import { ArrayOfNumbersResponse } from '../shared/ArrayOfNumbers.response';
-import { ContactModel } from './models/contact.model';
+import { ContactObject } from './dtos/contact.model';
 
 @Resolver()
 export class AppointmentsResolver {
@@ -131,18 +131,18 @@ export class AppointmentsResolver {
     return await this.appointmentsService.findDetailsOfAppointment(apptId);
   }
 
-  @Query(() => ContactModel, { nullable: true })
-  @UseGuards(JwtAuthGuard)
-  async getZoomLink(@Context() ctx) {
-    return await this.appointmentsService.getZoomLinkOfVet(ctx.req.user.userId);
-  }
+  // @Query(() => ContactObject, { nullable: true })
+  // @UseGuards(JwtAuthGuard)
+  // async getZoomLink(@Context() ctx) {
+  //   return await this.appointmentsService.getZoomLinkOfVet(ctx.req.user.userId);
+  // }
 
-  @Mutation(() => ServerResponse)
-  @UseGuards(JwtAuthGuard)
-  async updateZoomLink(@Args('link') link: string, @Context() ctx) {
-    return await this.appointmentsService.updateZoomLinkOfVet(
-      ctx.req.user.userId,
-      link,
-    );
-  }
+  // @Mutation(() => ServerResponse)
+  // @UseGuards(JwtAuthGuard)
+  // async updateZoomLink(@Args('link') link: string, @Context() ctx) {
+  //   return await this.appointmentsService.updateZoomLinkOfVet(
+  //     ctx.req.user.userId,
+  //     link,
+  //   );
+  // }
 }

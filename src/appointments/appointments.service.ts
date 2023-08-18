@@ -3,13 +3,19 @@ import { Appointment } from './models/appointment.model';
 import { BookAppointmentInput } from './dtos/bookAppointment.input';
 import { ServerResponse } from '../shared/operation.response';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import {
+  Between,
+  In,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm';
 import { CreateAllAppointmentSlotsInput } from './dtos/create_slot.input';
 import { Appointment_Slot } from './models/appointment_slot.model';
 import { Updated_Appointment_Slot } from './models/updated_appointment_slot';
 import { ArrayOfNumbersResponse } from '../shared/ArrayOfNumbers.response';
-import { Query } from '@nestjs/graphql';
-import { ContactModel } from './models/contact.model';
+import { ContactObject } from './dtos/contact.model';
+import { VetInfo } from 'src/vet_infos/models/vet_info.model';
 
 @Injectable()
 export class AppointmentsService {
@@ -20,8 +26,11 @@ export class AppointmentsService {
     private appointmentSlotRepository: Repository<Appointment_Slot>,
     @InjectRepository(Updated_Appointment_Slot)
     private updatedAppointmentSlotRepository: Repository<Updated_Appointment_Slot>,
-    @InjectRepository(ContactModel)
-    private contactRepository: Repository<ContactModel>,
+    // @InjectRepository(ContactObject)
+    // private contactRepository: Repository<ContactObject>,
+
+    @InjectRepository(VetInfo)
+    private vetInfoRepository: Repository<VetInfo>,
   ) {}
 
   async findAllOfVet(user: any): Promise<Appointment[]> {
@@ -102,7 +111,7 @@ export class AppointmentsService {
     });
 
     if (res.type === 'ONLINE') {
-      const contactInfo = await this.contactRepository.findOne({
+      const contactInfo = await this.vetInfoRepository.findOne({
         where: {
           vetId: res.vetId,
         },
@@ -406,36 +415,36 @@ export class AppointmentsService {
     // console.log(result);
   }
 
-  async getZoomLinkOfVet(vetId: string) {
-    return await this.contactRepository.findOne({
-      where: {
-        vetId,
-      },
-    });
-  }
+  //   async getZoomLinkOfVet(vetId: string) {
+  //     return await this.vetInfoRepository.findOne({
+  //       where: {
+  //         vetId,
+  //       },
+  //     });
+  //   }
 
-  async updateZoomLinkOfVet(vetId: string, zoomLink: string) {
-    const contact = await this.contactRepository.findOne({
-      where: {
-        vetId,
-      },
-    });
+  //   async updateZoomLinkOfVet(vetId: string, zoomLink: string) {
+  //     const contact = await this.contactRepository.findOne({
+  //       where: {
+  //         vetId,
+  //       },
+  //     });
 
-    if (!contact) {
-      await this.contactRepository.save({
-        vetId,
-        zoomLink,
-      });
-      return { message: 'Zoom Link added' } as ServerResponse;
-    }
+  //     if (!contact) {
+  //       await this.contactRepository.save({
+  //         vetId,
+  //         zoomLink,
+  //       });
+  //       return { message: 'Zoom Link added' } as ServerResponse;
+  //     }
 
-    await this.contactRepository.save({
-      ...contact,
-      zoomLink,
-    });
+  //     await this.contactRepository.save({
+  //       ...contact,
+  //       zoomLink,
+  //     });
 
-    return { message: 'Zoom link updated successfully' } as ServerResponse;
-  }
+  //     return { message: 'Zoom link updated successfully' } as ServerResponse;
+  //   }
 }
 
 function findElementsNotInArray(array1, array2) {

@@ -5,7 +5,7 @@ import { Appointment } from './models/appointment.model';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Appointment_Slot } from './models/appointment_slot.model';
 import { Updated_Appointment_Slot } from './models/updated_appointment_slot';
-import { ContactModel } from './models/contact.model';
+import { VetInfo } from 'src/vet_infos/models/vet_info.model';
 
 @Module({
   imports: [
@@ -13,7 +13,7 @@ import { ContactModel } from './models/contact.model';
       Appointment,
       Appointment_Slot,
       Updated_Appointment_Slot,
-      ContactModel,
+      VetInfo,
     ]),
   ],
   providers: [AppointmentsResolver, AppointmentsService],
