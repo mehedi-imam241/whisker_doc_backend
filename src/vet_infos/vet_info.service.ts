@@ -4,13 +4,16 @@ import { VetInfoInput } from './dtos/vet_info.input';
 import { ServerResponse } from '../shared/operation.response';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import axios from 'axios';
+import { LocationInput } from './dtos/location.input';
+import { SortByInput } from './dtos/sort_by.input';
 
 @Injectable()
 export class VetInfoService {
   constructor(
     @InjectRepository(VetInfo)
     private VetInfoRepository: Repository<VetInfo>,
-  ) {}
+  ) { }
 
   // async createVerificationRequest(input: VetInfoInput, user: any) {
   //   const response = new ServerResponse();
@@ -112,5 +115,45 @@ export class VetInfoService {
     return await this.VetInfoRepository.findOneBy({
       vetId: vetId,
     });
+  }
+
+  async getVetsByLocation(location: LocationInput, keep: number, skip: number, sort_by: SortByInput): Promise<VetInfo[]> {
+    const allVetInfos = await this.VetInfoRepository.find({
+      relations: {
+        vet: true,
+      }
+    });
+    let locationSearchString = `http://router.project-osrm.org/table/v1/driving/${location.lng},${location.lat}`;
+
+    allVetInfos.forEach((vetInfo) => {
+      locationSearchString += `;${vetInfo.location.lng},${vetInfo.location.lat}`;
+    });
+
+    locationSearchString += '?sources=0&destinations=';
+
+    for (let i = 1; i < allVetInfos.length + 1; i++) {
+      if (i > 1)
+        locationSearchString += ';';
+      locationSearchString += `${i}`;
+    }
+
+    locationSearchString += '&annotations=distance,duration';
+
+    const res = await axios.get(locationSearchString);
+
+    // console.log(res.data);
+    allVetInfos.forEach((vetInfo) => {
+      vetInfo.duration = res.data.durations[0][allVetInfos.indexOf(vetInfo)];
+      vetInfo.distance = res.data.distances[0][allVetInfos.indexOf(vetInfo)];
+    });
+
+
+    if (sort_by.sortBy === 'DISTANCE') {
+      allVetInfos.sort((a, b) => a.distance - b.distance);
+    }
+    else
+      allVetInfos.sort((a, b) => a.duration - b.duration);
+
+    return allVetInfos.slice(skip, skip + keep);
   }
 }

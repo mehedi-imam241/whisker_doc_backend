@@ -1,18 +1,12 @@
 import { Field, InputType } from '@nestjs/graphql';
+import { LocationInput } from './location.input';
 
-@InputType()
-export class VetLocationInput {
-  @Field(() => Number)
-  lat: number;
 
-  @Field(() => Number)
-  lng: number;
-}
 
 @InputType()
 export class VetInfoInput {
-  @Field(() => VetLocationInput)
-  location: VetLocationInput;
+  @Field(() => LocationInput)
+  location: LocationInput;
 
   @Field(() => String)
   certificateId: string;

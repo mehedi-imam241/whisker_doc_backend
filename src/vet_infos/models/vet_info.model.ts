@@ -58,4 +58,11 @@ export class VetInfo {
   @Field(() => String)
   @Column({ type: 'varchar' })
   zoomLink: string;
+
+  @Field(() => Number,{nullable:true})
+  distance: number;
+
+  @Field(() => Number,{nullable:true})
+  duration: number;
+
 }

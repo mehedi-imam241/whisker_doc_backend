@@ -108,34 +108,12 @@ type VetInfo {
   certificateId: String!
   degree: String!
   zoomLink: String!
+  distance: Float
+  duration: Float
 }
 
 type ArrayOfNumbersResponse {
   ids: [Float!]
-}
-
-type Review {
-  _id: String!
-  userId: String!
-  review: String!
-}
-
-type Medicine {
-  name: String!
-  dose: String!
-  duration: Float!
-}
-
-type Prescription {
-  _id: Float!
-  createdAt: DateTime!
-  petId: String!
-  pet: Pet
-  vetId: String!
-  vet: User
-  symptoms: [String!]!
-  diseases: [String!]!
-  medicines: [Medicine!]!
 }
 
 type Slots {
@@ -162,13 +140,10 @@ type HomeService {
   date_schedule: [Date_schedule!]
 }
 
-type Symptoms {
-  _id: String!
-  species: String!
-  vetId: String!
-  verifiedBy: String
-  title: String!
-  article: String!
+type Medicine {
+  name: String!
+  dose: String!
+  duration: Float!
 }
 
 type Query {
@@ -190,15 +165,24 @@ type Query {
   FindSlotsThatAreNotBooked(date: DateTime!, vetId: String!): ArrayOfNumbersResponse
   getAppointmentSlotsOfMe: [Appointment!]
   getAppointmentDetails(apptId: String!): Appointment
-  getMyInfo: VetInfo!
+  getMyInfo: VetInfo
   getVetInfo(vetId: String!): VetInfo
-  getReviews(limit: Float!, skip: Float!): [Review!]!
-  getReviewsOfVet(limit: Float!, skip: Float!): [Review!]!
-  getPrescriptionByPetId(limit: Float!, skip: Float!, petId: String!): [Prescription!]!
+  getAllVetsByLocation(location: LocationInput!, limit: Float!, skip: Float!, sort_by: SortByInput!): [VetInfo!]!
   getHomeServiceVets(limit: Float!, skip: Float!): [HomeService!]!
-  searchSymptoms(searchTerm: String!): [Symptoms!]!
-  getVerfiedSymptoms(limit: Float!, skip: Float!): [Symptoms!]!
-  getUnverfiedSymptoms(limit: Float!, skip: Float!): [Symptoms!]!
+}
+
+input LocationInput {
+  lat: Float!
+  lng: Float!
+}
+
+input SortByInput {
+  sortBy: SORT_BY!
+}
+
+enum SORT_BY {
+  DISTANCE
+  DURATION
 }
 
 type Mutation {
@@ -213,12 +197,7 @@ type Mutation {
   CreateSlots(input: CreateAllAppointmentSlotsInput!): ServerResponse!
   updateAppointmentSlot(input: CreateAllAppointmentSlotsInput!): ServerResponse!
   UpdateVetInfo(input: VetInfoInput!): ServerResponse!
-  createReview(review: String!): ServerResponse!
-  createReviewOfVet(review: String!, vetId: String!): ServerResponse!
-  createPrescription(input: CreatePrescription!): Prescription!
   JoinHomeService: ServerResponse!
-  verifySymptoms(symptomsId: String!): ServerResponse!
-  createSymptoms(input: CreateSymptomsInput!): ServerResponse!
 }
 
 input CreateBlogInput {
@@ -283,32 +262,8 @@ input CreateAppointmentSlotInput {
 }
 
 input VetInfoInput {
-  location: VetLocationInput!
+  location: LocationInput!
   certificateId: String!
   zoomLink: String!
   degree: String!
-}
-
-input VetLocationInput {
-  lat: Float!
-  lng: Float!
-}
-
-input CreatePrescription {
-  petId: String!
-  symptoms: [String!]!
-  diseases: [String!]!
-  medicines: [MedicineInput!]!
-}
-
-input MedicineInput {
-  name: String!
-  dose: String!
-  duration: Float!
-}
-
-input CreateSymptomsInput {
-  species: String!
-  title: String!
-  article: String!
 }
