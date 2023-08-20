@@ -48,32 +48,6 @@ type StatusOutput {
   plan: plan!
 }
 
-type Medicine {
-  name: String!
-  dose: String!
-  duration: Float!
-}
-
-type Prescription {
-  _id: Float!
-  createdAt: DateTime!
-  petId: String!
-  appointmentId: String!
-  appointment: Appointment
-  pet: Pet
-  vetId: String!
-  vet: User
-  symptoms: [String!]!
-  diseases: [String!]!
-  medicines: [Medicine!]!
-  advice: String!
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
 type Appointment {
   _id: String!
   type: String!
@@ -86,8 +60,12 @@ type Appointment {
   pet: Pet
   owner: User
   vet: User
-  prescription: Prescription
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type Pet {
   _id: String!
@@ -162,6 +140,12 @@ type HomeService {
   date_schedule: [Date_schedule!]
 }
 
+type Medicine {
+  name: String!
+  dose: String!
+  duration: Float!
+}
+
 type Query {
   searchDrug(query: String!): [SearchResponse!]!
   getVet(id: String!): User!
@@ -175,7 +159,8 @@ type Query {
   getPetById(id: String!): Pet!
   getAllAppointmentsOfVet: [Appointment!]!
   getAllAppointmentsOfVetToday(type: String!): [Appointment!]!
-  getAppointmentOfPet(petId: String!): Appointment!
+  getAppointmentById(appointmentId: String!): Appointment!
+  getAllPreviousAppointmentsOfPet(petId: String!): [Appointment!]!
   IsSlotCreated: ServerResponse!
   getAppointmentSlotsOfVet: Appointment_Slot
   FindSlotsThatAreNotBooked(date: DateTime!, vetId: String!): ArrayOfNumbersResponse

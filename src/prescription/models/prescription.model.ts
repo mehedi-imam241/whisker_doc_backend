@@ -9,7 +9,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  OneToOne
+  OneToOne,
 } from 'typeorm';
 
 @ObjectType()
@@ -48,7 +48,7 @@ export class Prescription {
   appointmentId: string;
 
   @Field(() => Appointment, { nullable: true })
-  @OneToOne(() => Appointment, (appointment)=> appointment.prescription)
+  @OneToOne(() => Appointment)
   @JoinColumn({ name: 'appointmentId' })
   appointment: Appointment;
 

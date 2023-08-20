@@ -29,17 +29,21 @@ export class AppointmentsResolver {
     @Args('type') type: string,
     @Context() ctx,
   ): Promise<Appointment[]> {
-    return await this.
-    appointmentsService.findAllOfVetToday(type, ctx.req.user);
+    return await this.appointmentsService.findAllOfVetToday(type, ctx.req.user);
   }
 
   @Query(() => Appointment)
-  @UseGuards(JwtAuthGuard)
-  async getAppointmentOfPet(
-    @Args('petId') petId: string,
-    @Context() ctx,
+  async getAppointmentById(
+    @Args('appointmentId') appointmentId: string,
   ): Promise<any> {
-    return await this.appointmentsService.findOneOfPet(petId, ctx.req.user);
+    return await this.appointmentsService.findById(appointmentId);
+  }
+
+  @Query(() => [Appointment])
+  async getAllPreviousAppointmentsOfPet(
+    @Args('petId') petId: string,
+  ): Promise<Appointment[]> {
+    return await this.appointmentsService.findAllPreviousOfPet(petId);
   }
 
   @Mutation(() => ServerResponse)

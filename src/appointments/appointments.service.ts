@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   Between,
   In,
+  LessThan,
   LessThanOrEqual,
   MoreThan,
   MoreThanOrEqual,
@@ -41,9 +42,6 @@ export class AppointmentsService {
           vetId: user.userId,
         },
       });
-
-      console.log(res)
-      
       return res;
     }
     return [];
@@ -56,46 +54,51 @@ export class AppointmentsService {
         today.getFullYear(),
         today.getMonth(),
         today.getDate(),
-        0,
-        0,
-        0,
+        23,
+        59,
+        59,
       );
       const endOfToday = new Date(
         today.getFullYear(),
         today.getMonth(),
-        today.getDate(),
+        today.getDate() + 1,
         23,
         59,
         59,
       );
 
-      // Find all appointments where the date is between the start and end of today
-      return await this.appointmentRepository.find({
+      // Find all appointments where the date is today and the vetId is the vetId of the user
+      const res = await this.appointmentRepository.find({
         where: {
           vetId: user.userId,
           date: Between(startOfToday, endOfToday),
           type,
         },
+        relations: {
+          pet: true,
+          owner: true,
+        },
       });
+      return res;
     }
     return [];
   }
 
   async findUpcomingsOfUser(userId: string): Promise<Appointment[]> {
     const today = new Date();
-    // const startOfToday = new Date(
-    //   today.getFullYear(),
-    //   today.getMonth(),
-    //   today.getDate(),
-    //   23,
-    //   5,
-    //   0,
-    // );
+    const startOfToday = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      23,
+      5,
+      0,
+    );
 
     return await this.appointmentRepository.find({
       where: {
         ownerId: userId,
-        date: MoreThan(today),
+        date: MoreThanOrEqual(startOfToday),
       },
       relations: {
         pet: true,
@@ -156,8 +159,38 @@ export class AppointmentsService {
     return res;
   }
 
-  async findOneOfPet(petId: string, user: any): Promise<any> {
-    await this.appointmentRepository.findOneBy({ petId, ownerId: user.userId });
+  async findById(appointmentId: string): Promise<Appointment> {
+    return await this.appointmentRepository.findOne({
+      where: {
+        _id: appointmentId,
+      },
+      relations: {
+        pet: true,
+        owner: true,
+      },
+    });
+  }
+
+  async findAllPreviousOfPet(petId: string): Promise<Appointment[]> {
+    const today = new Date();
+    const startOfToday = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      0,
+      0,
+      0,
+    );
+
+    return await this.appointmentRepository.find({
+      where: {
+        petId,
+        date: LessThanOrEqual(startOfToday),
+      },
+      relations: {
+        vet: true,
+      },
+    });
   }
 
   async deleteAppointmentOfVet(apptId: string, user: any) {
