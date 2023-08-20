@@ -5,9 +5,11 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  OneToOne
 } from 'typeorm';
 import { Pet } from '../../pets/models/pet.model';
 import { User } from '../../user/models/user.model';
+import { Prescription } from 'src/prescription/models/prescription.model';
 
 @ObjectType()
 @Entity()
@@ -67,4 +69,16 @@ export class Appointment {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'vetId' })
   vet: User;
+
+
+  // @Field(()=> String,{nullable:true})
+  // @Column('varchar')
+  // prescriptionId: string;
+
+
+  @Field(() => Prescription, { nullable: true })
+  @OneToOne(() => Prescription, (prescription)=>prescription.appointment)
+  prescription: Prescription;
+
+
 }

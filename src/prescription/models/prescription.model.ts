@@ -1,4 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { Appointment } from 'src/appointments/models/appointment.model';
 import { Pet } from 'src/pets/models/pet.model';
 import { User } from 'src/user/models/user.model';
 import {
@@ -8,6 +9,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  OneToOne
 } from 'typeorm';
 
 @ObjectType()
@@ -41,6 +43,15 @@ export class Prescription {
   @Column({ type: 'varchar' })
   petId: string;
 
+  @Field(() => String)
+  @Column({ type: 'varchar' })
+  appointmentId: string;
+
+  @Field(() => Appointment, { nullable: true })
+  @OneToOne(() => Appointment, (appointment)=> appointment.prescription)
+  @JoinColumn({ name: 'appointmentId' })
+  appointment: Appointment;
+
   @Field(() => Pet, { nullable: true })
   @ManyToOne(() => Pet)
   @JoinColumn({ name: 'petId' })
@@ -66,4 +77,8 @@ export class Prescription {
   @Field(() => [Medicine])
   @Column('jsonb')
   medicines: Medicine[];
+
+  @Field(() => String)
+  @Column({ type: 'varchar' })
+  advice: string;
 }

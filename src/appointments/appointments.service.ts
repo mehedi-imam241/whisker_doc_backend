@@ -36,11 +36,15 @@ export class AppointmentsService {
 
   async findAllOfVet(user: any): Promise<Appointment[]> {
     if (user.role === 'VET') {
-      return await this.appointmentRepository.find({
+      const res = await this.appointmentRepository.find({
         where: {
           vetId: user.userId,
         },
       });
+
+      console.log(res)
+      
+      return res;
     }
     return [];
   }

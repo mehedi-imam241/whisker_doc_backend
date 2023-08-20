@@ -29,7 +29,8 @@ export class AppointmentsResolver {
     @Args('type') type: string,
     @Context() ctx,
   ): Promise<Appointment[]> {
-    return await this.appointmentsService.findAllOfVetToday(type, ctx.req.user);
+    return await this.
+    appointmentsService.findAllOfVetToday(type, ctx.req.user);
   }
 
   @Query(() => Appointment)
