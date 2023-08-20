@@ -7,6 +7,7 @@ import {
   Between,
   In,
   LessThanOrEqual,
+  MoreThan,
   MoreThanOrEqual,
   Repository,
 } from 'typeorm';
@@ -76,7 +77,30 @@ export class AppointmentsService {
     return [];
   }
 
-  async findAllOfUser(userId: string): Promise<Appointment[]> {
+  async findUpcomingsOfUser(userId: string): Promise<Appointment[]> {
+    const today = new Date();
+    // const startOfToday = new Date(
+    //   today.getFullYear(),
+    //   today.getMonth(),
+    //   today.getDate(),
+    //   23,
+    //   5,
+    //   0,
+    // );
+
+    return await this.appointmentRepository.find({
+      where: {
+        ownerId: userId,
+        date: MoreThan(today),
+      },
+      relations: {
+        pet: true,
+        vet: true,
+      },
+    });
+  }
+
+  async findPreviousOfUser(userId: string): Promise<Appointment[]> {
     const today = new Date();
     const startOfToday = new Date(
       today.getFullYear(),
@@ -90,7 +114,7 @@ export class AppointmentsService {
     return await this.appointmentRepository.find({
       where: {
         ownerId: userId,
-        date: MoreThanOrEqual(startOfToday),
+        date: LessThanOrEqual(startOfToday),
       },
       relations: {
         pet: true,

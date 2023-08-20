@@ -122,7 +122,9 @@ export class AppointmentsResolver {
   @Query(() => [Appointment], { nullable: true })
   @UseGuards(JwtAuthGuard)
   async getAppointmentSlotsOfMe(@Context() ctx) {
-    return await this.appointmentsService.findAllOfUser(ctx.req.user.userId);
+    return await this.appointmentsService.findUpcomingsOfUser(
+      ctx.req.user.userId,
+    );
   }
 
   @Query(() => Appointment, { nullable: true })
