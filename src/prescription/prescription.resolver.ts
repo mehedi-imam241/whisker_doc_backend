@@ -4,6 +4,7 @@ import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwtAuth.guard';
 import { CreatePrescription } from './dtos/prescription.dto';
 import { Prescription } from './models/prescription.model';
+import { CreatePrescription2 } from './dtos/prescription2.dto';
 
 @Resolver()
 export class PrescriptionResolver {
@@ -21,13 +22,25 @@ export class PrescriptionResolver {
     );
   }
 
-  @Query(() => [Prescription])
-  @UseGuards(JwtAuthGuard)
-  async getPrescriptionByPetId(
-    @Args('limit') limit: number,
-    @Args('skip') skip: number,
-    @Args('petId') petId: string,
-  ) {
-    return this.prescriptionService.getPrescriptionByPetId(limit, skip, petId);
+  @Mutation(() => Prescription)
+  async createPrescription2(
+    @Args('input') input: CreatePrescription2,
+    @Context() ctx,  ) {
+    return this.prescriptionService.createPrescription2(
+      input
+
+    );
   }
+
+
+
+  // @Query(() => [Prescription])
+  // @UseGuards(JwtAuthGuard)
+  // async getPrescriptionByPetId(
+  //   @Args('limit') limit: number,
+  //   @Args('skip') skip: number,
+  //   @Args('petId') petId: string,
+  // ) {
+  //   return this.prescriptionService.getPrescriptionByPetId(limit, skip, petId);
+  // }
 }

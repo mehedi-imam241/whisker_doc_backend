@@ -35,9 +35,9 @@ export class Prescription {
   @PrimaryGeneratedColumn('increment')
   _id: number;
 
-  @Field(() => Date)
-  @CreateDateColumn()
-  createdAt: Date;
+  // @Field(() => Date)
+  // @CreateDateColumn()
+  // createdAt: Date;
 
   @Field(() => String)
   @Column({ type: 'varchar' })

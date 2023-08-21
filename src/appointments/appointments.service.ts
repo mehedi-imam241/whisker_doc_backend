@@ -28,8 +28,6 @@ export class AppointmentsService {
     private appointmentSlotRepository: Repository<Appointment_Slot>,
     @InjectRepository(Updated_Appointment_Slot)
     private updatedAppointmentSlotRepository: Repository<Updated_Appointment_Slot>,
-    // @InjectRepository(ContactObject)
-    // private contactRepository: Repository<ContactObject>,
 
     @InjectRepository(VetInfo)
     private vetInfoRepository: Repository<VetInfo>,
@@ -51,21 +49,24 @@ export class AppointmentsService {
     if (user.role === 'VET') {
       const today = new Date();
       const startOfToday = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate(),
-        23,
-        59,
-        59,
+
+        today.getUTCFullYear(),
+        today.getUTCMonth(),
+        today.getUTCDate(),
+        0,
+        0,
+        0,
       );
       const endOfToday = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate() + 1,
+        today.getUTCFullYear(),
+        today.getUTCMonth(),
+        today.getUTCDate(),
         23,
         59,
         59,
       );
+
+      console.log(Between(startOfToday, endOfToday))
 
       // Find all appointments where the date is today and the vetId is the vetId of the user
       const res = await this.appointmentRepository.find({
@@ -90,8 +91,8 @@ export class AppointmentsService {
       today.getFullYear(),
       today.getMonth(),
       today.getDate(),
-      23,
-      5,
+      0,
+      0,
       0,
     );
 
@@ -174,9 +175,9 @@ export class AppointmentsService {
   async findAllPreviousOfPet(petId: string): Promise<Appointment[]> {
     const today = new Date();
     const startOfToday = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
+      today.getUTCFullYear(),
+      today.getUTCMonth(),
+      today.getUTCDate(),
       0,
       0,
       0,
@@ -185,7 +186,7 @@ export class AppointmentsService {
     return await this.appointmentRepository.find({
       where: {
         petId,
-        date: LessThanOrEqual(startOfToday),
+        date: LessThan(startOfToday),
       },
       relations: {
         vet: true,

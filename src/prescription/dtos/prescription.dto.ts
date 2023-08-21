@@ -1,6 +1,4 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
-import { Prop, Schema } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
+import { Field, InputType } from '@nestjs/graphql';
 
 @InputType()
 export class MedicineInput {
@@ -13,10 +11,13 @@ export class MedicineInput {
 }
 
 @InputType()
-@Schema()
 export class CreatePrescription {
+
   @Field(() => String)
   petId: string;
+
+  @Field(() => String)
+  appointmentId: string;
 
   @Field(() => [String])
   symptoms: string[];
