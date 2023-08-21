@@ -88,7 +88,7 @@ import { Prescription } from './prescription/models/prescription.model';
     // SubscriptionModule,
     // ReviewModule,
     // ReviewVetsModule,
-    // PrescriptionModule,
+    PrescriptionModule,
     // HomeServiceModule,
     // SymptomsModule,
     SchedulerModule,

@@ -74,7 +74,6 @@ export class Appointment {
   // @Column('varchar')
   // prescriptionId: string;
 
-  // @Field(() => Prescription, { nullable: true })
-  // @OneToOne(() => Prescription, (prescription)=>prescription.appointment)
-  // prescription: Prescription;
+  @Field(() => Prescription, { nullable: true })
+  prescription: Prescription;
 }

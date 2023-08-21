@@ -4,6 +4,7 @@ import { CreatePrescription } from './dtos/prescription.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, Repository } from 'typeorm';
 import { CreatePrescription2 } from './dtos/prescription2.dto';
+import { ServerResponse } from 'src/shared/operation.response';
 
 @Injectable()
 export class PrescriptionService {
@@ -16,12 +17,24 @@ export class PrescriptionService {
     createPrescriptionDto: CreatePrescription,
     vetId: string,
   ) {
-    const newPrescription = new Prescription({
-      ...createPrescriptionDto,
-      vetId: vetId,
-    });
-    // console.log(newPrescription);
-    return await this.PrescriptionRepository.save(newPrescription);
+
+
+    try {
+      const newPrescription = new Prescription({
+        ...createPrescriptionDto,
+        vetId: vetId,
+      });
+      // console.log(newPrescription);
+      await this.PrescriptionRepository.save(newPrescription);
+
+      return {message:"Prescription Created Successfully",success:true} as ServerResponse
+
+
+    } catch (error) {
+      return {message:"Prescription Creation Failed",success:false} as ServerResponse
+    }
+
+
   }
 
 

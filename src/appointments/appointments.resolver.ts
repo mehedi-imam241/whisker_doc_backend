@@ -82,7 +82,6 @@ export class AppointmentsResolver {
     @Args('input') input: CreateAllAppointmentSlotsInput,
     @Context() ctx,
   ) {
-    console.log(input);
     return await this.appointmentsService.createSlots(
       input,
       ctx.req.user.userId,
@@ -131,6 +130,15 @@ export class AppointmentsResolver {
       ctx.req.user.userId,
     );
   }
+
+  @Query(() => [Appointment], { nullable: true })
+  @UseGuards(JwtAuthGuard)
+  async getPreviousAppointmentSlotsOfMe(@Context() ctx) {
+    return await this.appointmentsService.findPreviousOfUser(
+      ctx.req.user.userId,
+    );
+  }
+
 
   @Query(() => Appointment, { nullable: true })
   @UseGuards(JwtAuthGuard)

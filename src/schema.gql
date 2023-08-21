@@ -24,6 +24,7 @@ type Blog {
 
 type ServerResponse {
   message: String!
+  success: Boolean
 }
 
 type LoginResponseDto {
@@ -48,6 +49,26 @@ type StatusOutput {
   plan: plan!
 }
 
+type Medicine {
+  name: String!
+  dose: String!
+  duration: Float!
+}
+
+type Prescription {
+  _id: Float!
+  petId: String!
+  appointmentId: String!
+  appointment: Appointment
+  pet: Pet
+  vetId: String!
+  vet: User
+  symptoms: [String!]!
+  diseases: [String!]!
+  medicines: [Medicine!]!
+  advice: String!
+}
+
 type Appointment {
   _id: String!
   type: String!
@@ -60,6 +81,7 @@ type Appointment {
   pet: Pet
   owner: User
   vet: User
+  prescription: Prescription
 }
 
 """
@@ -140,12 +162,6 @@ type HomeService {
   date_schedule: [Date_schedule!]
 }
 
-type Medicine {
-  name: String!
-  dose: String!
-  duration: Float!
-}
-
 type Query {
   searchDrug(query: String!): [SearchResponse!]!
   getVet(id: String!): User!
@@ -165,6 +181,7 @@ type Query {
   getAppointmentSlotsOfVet: Appointment_Slot
   FindSlotsThatAreNotBooked(date: DateTime!, vetId: String!): ArrayOfNumbersResponse
   getAppointmentSlotsOfMe: [Appointment!]
+  getPreviousAppointmentSlotsOfMe: [Appointment!]
   getAppointmentDetails(apptId: String!): Appointment
   getMyInfo: VetInfo
   getVetInfo(vetId: String!): VetInfo
@@ -198,6 +215,8 @@ type Mutation {
   CreateSlots(input: CreateAllAppointmentSlotsInput!): ServerResponse!
   updateAppointmentSlot(input: CreateAllAppointmentSlotsInput!): ServerResponse!
   UpdateVetInfo(input: VetInfoInput!): ServerResponse!
+  createPrescription(input: CreatePrescription!): ServerResponse!
+  createPrescription2(input: CreatePrescription2!): Prescription!
   JoinHomeService: ServerResponse!
 }
 
@@ -267,4 +286,29 @@ input VetInfoInput {
   certificateId: String!
   zoomLink: String!
   degree: String!
+}
+
+input CreatePrescription {
+  petId: String!
+  appointmentId: String!
+  symptoms: [String!]!
+  diseases: [String!]!
+  medicines: [MedicineInput!]!
+  advice: String!
+}
+
+input MedicineInput {
+  name: String!
+  dose: String!
+  duration: Float!
+}
+
+input CreatePrescription2 {
+  petId: String!
+  appointmentId: String!
+  vetId: String!
+  symptoms: [String!]!
+  diseases: [String!]!
+  medicines: [MedicineInput!]!
+  advice: String!
 }

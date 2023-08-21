@@ -7,6 +7,9 @@ import { MedicineInput } from './prescription.dto';
 
 export class CreatePrescription2 {
 
+
+
+
     @Field(() => String)
     petId: string;
     
@@ -25,6 +28,8 @@ export class CreatePrescription2 {
 
   @Field(() => [MedicineInput])
   medicines: MedicineInput[];
+  @Field(() => String)
+  advice: string;
 }
 
 

@@ -5,12 +5,14 @@ import { JwtAuthGuard } from '../auth/jwtAuth.guard';
 import { CreatePrescription } from './dtos/prescription.dto';
 import { Prescription } from './models/prescription.model';
 import { CreatePrescription2 } from './dtos/prescription2.dto';
+import { ServerResponse } from 'src/shared/operation.response';
+
 
 @Resolver()
 export class PrescriptionResolver {
   constructor(private prescriptionService: PrescriptionService) {}
 
-  @Mutation(() => Prescription)
+  @Mutation(() => ServerResponse)
   @UseGuards(JwtAuthGuard)
   async createPrescription(
     @Args('input') input: CreatePrescription,

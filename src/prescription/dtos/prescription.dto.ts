@@ -27,4 +27,9 @@ export class CreatePrescription {
 
   @Field(() => [MedicineInput])
   medicines: MedicineInput[];
+
+  @Field(() => String)
+  advice: string;
+
+
 }

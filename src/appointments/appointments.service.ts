@@ -18,6 +18,7 @@ import { Updated_Appointment_Slot } from './models/updated_appointment_slot';
 import { ArrayOfNumbersResponse } from '../shared/ArrayOfNumbers.response';
 import { ContactObject } from './dtos/contact.model';
 import { VetInfo } from 'src/vet_infos/models/vet_info.model';
+import { Prescription } from 'src/prescription/models/prescription.model';
 
 @Injectable()
 export class AppointmentsService {
@@ -31,6 +32,10 @@ export class AppointmentsService {
 
     @InjectRepository(VetInfo)
     private vetInfoRepository: Repository<VetInfo>,
+
+    @InjectRepository(Prescription)
+    private prescriptionRepository: Repository<Prescription>,
+
   ) {}
 
   async findAllOfVet(user: any): Promise<Appointment[]> {
@@ -85,12 +90,15 @@ export class AppointmentsService {
     return [];
   }
 
+
+
+
   async findUpcomingsOfUser(userId: string): Promise<Appointment[]> {
     const today = new Date();
     const startOfToday = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
+      today.getUTCFullYear(),
+      today.getUTCMonth(),
+      today.getUTCDate(),
       0,
       0,
       0,
@@ -111,9 +119,9 @@ export class AppointmentsService {
   async findPreviousOfUser(userId: string): Promise<Appointment[]> {
     const today = new Date();
     const startOfToday = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
+      today.getUTCFullYear(),
+      today.getUTCMonth(),
+      today.getUTCDate(),
       0,
       0,
       0,
@@ -122,7 +130,7 @@ export class AppointmentsService {
     return await this.appointmentRepository.find({
       where: {
         ownerId: userId,
-        date: LessThanOrEqual(startOfToday),
+        date: LessThan(startOfToday),
       },
       relations: {
         pet: true,
@@ -157,19 +165,55 @@ export class AppointmentsService {
       res.zoomLink = contactInfo.zoomLink;
     }
 
+    const prescriptionResponse = await this.prescriptionRepository.findOne(
+      {
+        where: {
+          appointmentId : apptId
+        }
+      }
+    )
+
+
+    if(prescriptionResponse)
+    {
+      res.prescription=prescriptionResponse;
+    }
+
     return res;
+
   }
 
   async findById(appointmentId: string): Promise<Appointment> {
-    return await this.appointmentRepository.findOne({
+    const res = await this.appointmentRepository.findOne({
       where: {
         _id: appointmentId,
       },
       relations: {
         pet: true,
         owner: true,
+        vet: true
       },
     });
+
+
+    const prescriptionResponse = await this.prescriptionRepository.findOne(
+      {
+        where: {
+          appointmentId
+        }
+      }
+    )
+
+
+    if(prescriptionResponse)
+    {
+      res.prescription=prescriptionResponse;
+    }
+
+
+
+
+    return res;
   }
 
   async findAllPreviousOfPet(petId: string): Promise<Appointment[]> {
