@@ -57,4 +57,27 @@ export class UserService {
       _id: id,
     });
   }
+
+  async updateAvatar(userId: string, avatar: string) {
+    try {
+      const user = await this.userRepository.findOneBy({
+        _id: userId,
+      });
+
+      await this.userRepository.save({
+        ...user,
+        avatar: avatar,
+      });
+
+      return {
+        success: true,
+        message: 'Avatar updated successfully',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Avatar update failed',
+      };
+    }
+  }
 }

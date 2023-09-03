@@ -36,6 +36,7 @@ import { Appointment_Slot } from './appointments/models/appointment_slot.model';
 import { Updated_Appointment_Slot } from './appointments/models/updated_appointment_slot';
 import { ContactObject } from './appointments/dtos/contact.model';
 import { Prescription } from './prescription/models/prescription.model';
+import { Review } from './review/models/review.model';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { Prescription } from './prescription/models/prescription.model';
         Updated_Appointment_Slot,
         ContactObject,
         Prescription,
+        Review,
       ],
     }),
     // MongooseModule.forRoot(process.env.DB_HOST, {
@@ -86,7 +88,7 @@ import { Prescription } from './prescription/models/prescription.model';
     SearchModule,
     VetInfoModule,
     // SubscriptionModule,
-    // ReviewModule,
+    ReviewModule,
     // ReviewVetsModule,
     PrescriptionModule,
     // HomeServiceModule,

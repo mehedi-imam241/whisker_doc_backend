@@ -1,22 +1,64 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
 import { Field, ObjectType } from '@nestjs/graphql';
-
-export type UserDocument = HydratedDocument<Review>;
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from '../../user/models/user.model';
+import { Appointment } from 'src/appointments/models/appointment.model';
 
 @ObjectType()
-@Schema()
+@Entity()
 export class Review {
-  @Field(() => String)
-  _id: string;
+  constructor(fields?: Partial<Review>) {
+    if (fields) {
+      Object.assign(this, fields);
+    }
+  }
+
+  @Field(() => Number)
+  @PrimaryGeneratedColumn('increment')
+  _id: number;
 
   @Field(() => String)
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Column({ type: 'varchar' })
+  vetId: string;
+
+  @Field(() => User)
+  @OneToOne(() => User)
+  @JoinColumn({ name: 'vetId' })
+  vet: User;
+
+  @Field(() => String)
+  @Column({ type: 'varchar' })
   userId: string;
 
-  @Field(() => String)
-  @Prop()
-  review: string;
-}
+  @Field(() => User)
+  @OneToOne(() => User)
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
-export const ReviewSchema = SchemaFactory.createForClass(Review);
+  @Field(() => String)
+  @Column({ type: 'varchar', unique: true })
+  appointmentId: string;
+
+  @Field(() => String)
+  @OneToOne(() => Appointment)
+  @JoinColumn({ name: 'appointmentId' })
+  appointment: Appointment;
+
+  @Field(() => String)
+  @Column({ type: 'varchar' })
+  comment: string;
+
+  @Field(() => Number)
+  @Column({ type: 'int' })
+  rating: number;
+
+  @Field(() => Date)
+  @CreateDateColumn()
+  createdAt: Date;
+}

@@ -59,10 +59,20 @@ export class VetInfo {
   @Column({ type: 'varchar' })
   zoomLink: string;
 
-  @Field(() => Number,{nullable:true})
+  @Field(() => Number, { nullable: true })
   distance: number;
 
-  @Field(() => Number,{nullable:true})
+  @Field(() => Number, { nullable: true })
   duration: number;
 
+  @Field(() => Number)
+  @Column({ type: 'int', default: 0 })
+  sumRating: number;
+
+  @Field(() => Number)
+  @Column({ type: 'int', default: 0 })
+  ratingCount: number;
+
+  @Field(() => Number, { nullable: true, defaultValue: 0 })
+  apptCount: number;
 }

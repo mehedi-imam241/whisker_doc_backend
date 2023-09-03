@@ -62,4 +62,39 @@ export class PetsService {
   // async update(id: string, input: CreatePetInput): Promise<Pet> {
   //
   // }
+
+  async uploadAvatar(userId: string, id: string, avatar: string) {
+    try {
+      const pet = await this.petRepository.findOne({
+        where: {
+          _id: id,
+          owner: {
+            _id: userId,
+          },
+        },
+        relations: {
+          owner: true,
+        },
+      });
+
+      if (!pet) throw new Error('Pet not found');
+
+      delete pet.owner;
+
+      await this.petRepository.save({
+        ...pet,
+        avatar: avatar,
+      });
+
+      return {
+        succcess: true,
+        message: 'Avatar uploaded successfully',
+      } as ServerResponse;
+    } catch (e) {
+      return {
+        succcess: false,
+        message: e,
+      } as ServerResponse;
+    }
+  }
 }

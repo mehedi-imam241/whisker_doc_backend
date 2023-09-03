@@ -15,16 +15,16 @@ type SearchResponse {
   Use: String!
 }
 
+type ServerResponse {
+  message: String!
+  success: Boolean
+}
+
 type Blog {
   _id: String!
   title: String!
   body: String!
   author: User
-}
-
-type ServerResponse {
-  message: String!
-  success: Boolean
 }
 
 type LoginResponseDto {
@@ -69,6 +69,24 @@ type Prescription {
   advice: String!
 }
 
+type Review {
+  _id: Float!
+  vetId: String!
+  vet: User!
+  userId: String!
+  user: User!
+  appointmentId: String!
+  appointment: String!
+  comment: String!
+  rating: Float!
+  createdAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type Appointment {
   _id: String!
   type: String!
@@ -82,12 +100,8 @@ type Appointment {
   owner: User
   vet: User
   prescription: Prescription
+  review: Review
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 type Pet {
   _id: String!
@@ -132,6 +146,9 @@ type VetInfo {
   zoomLink: String!
   distance: Float
   duration: Float
+  sumRating: Float!
+  ratingCount: Float!
+  apptCount: Float
 }
 
 type ArrayOfNumbersResponse {
@@ -185,36 +202,41 @@ type Query {
   getAppointmentDetails(apptId: String!): Appointment
   getMyInfo: VetInfo
   getVetInfo(vetId: String!): VetInfo
-  getAllVetsByLocation(location: LocationInput!, limit: Float!, skip: Float!, sort_by: SortByInput!): [VetInfo!]!
+  getAllVetsByLocation(limit: Float!, skip: Float!, sort_by: SortByInput!): [VetInfo!]!
+  findReviewsByVetId(vetId: String!): [Review!]!
+  findMyReviews: [Review!]!
+  findReviewByAppointmentId(apptId: String!): Review!
   getHomeServiceVets(limit: Float!, skip: Float!): [HomeService!]!
-}
-
-input LocationInput {
-  lat: Float!
-  lng: Float!
 }
 
 input SortByInput {
   sortBy: SORT_BY!
+  lat: Float
+  lng: Float
 }
 
 enum SORT_BY {
   DISTANCE
   DURATION
+  RATINGS
+  EXPERIENCE
 }
 
 type Mutation {
+  uploadUserAvatar(avatar: String!): ServerResponse!
   createBlog(input: CreateBlogInput!): ServerResponse!
   login(loginInput: LoginInput!): LoginResponseDto!
   register(input: RegisterInput!): User!
   createSubscription: ServerResponse!
   resumeSubscription: ServerResponse!
   createPet(input: CreatePetInput!): ServerResponse!
+  uploadPetAvatar(avatar: String!, petId: String!): ServerResponse!
   bookAppointment(input: BookAppointmentInput!): ServerResponse!
   cancelAppointment(appointmentId: String!): ServerResponse!
   CreateSlots(input: CreateAllAppointmentSlotsInput!): ServerResponse!
   updateAppointmentSlot(input: CreateAllAppointmentSlotsInput!): ServerResponse!
   UpdateVetInfo(input: VetInfoInput!): ServerResponse!
+  createReview(review: CreateReviewInput!): ServerResponse!
   createPrescription(input: CreatePrescription!): ServerResponse!
   createPrescription2(input: CreatePrescription2!): Prescription!
   JoinHomeService: ServerResponse!
@@ -286,6 +308,18 @@ input VetInfoInput {
   certificateId: String!
   zoomLink: String!
   degree: String!
+}
+
+input LocationInput {
+  lat: Float!
+  lng: Float!
+}
+
+input CreateReviewInput {
+  comment: String!
+  appointmentId: String!
+  vetId: String!
+  rating: Float!
 }
 
 input CreatePrescription {

@@ -5,7 +5,6 @@ import { ServerResponse } from '../shared/operation.response';
 import { JwtAuthGuard } from '../auth/jwtAuth.guard';
 import { UseGuards } from '@nestjs/common';
 import { VetInfo } from './models/vet_info.model';
-import { LocationInput } from './dtos/location.input';
 import { SortByInput } from './dtos/sort_by.input';
 
 @Resolver()
@@ -52,7 +51,7 @@ export class VetInfoResolver {
   //   );
   // }
 
-  @Query(() => VetInfo,{nullable:true})
+  @Query(() => VetInfo, { nullable: true })
   @UseGuards(JwtAuthGuard)
   async getMyInfo(@Context() ctx) {
     return this.VetInfoService.getVetInfo(ctx.req.user.userId);
@@ -70,8 +69,11 @@ export class VetInfoResolver {
   }
 
   @Query(() => [VetInfo])
-  async getAllVetsByLocation(@Args('location') location:LocationInput, @Args('limit') keep: number, @Args('skip') skip: number, @Args('sort_by') sort_by: SortByInput) {
-    return this.VetInfoService.getVetsByLocation(location,keep,skip,sort_by);
+  async getAllVetsByLocation(
+    @Args('limit') keep: number,
+    @Args('skip') skip: number,
+    @Args('sort_by') sort_by: SortByInput,
+  ) {
+    return this.VetInfoService.getVetsByLocation(keep, skip, sort_by);
   }
-  
 }

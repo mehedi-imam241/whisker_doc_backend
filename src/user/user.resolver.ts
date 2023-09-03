@@ -1,9 +1,10 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './models/user.model';
 import { JwtAuthGuard } from '../auth/jwtAuth.guard';
 import { UseGuards } from '@nestjs/common';
 import { SearchResponse } from '../search_drug/dtos/search.response';
+import { ServerResponse } from 'src/shared/operation.response';
 
 @Resolver()
 export class UserResolver {
@@ -42,5 +43,10 @@ export class UserResolver {
   @Query(() => Number)
   async getVetsCount() {
     return Math.ceil((await this.userService.getVetsCount()) / 10);
+  }
+  @Mutation(() => ServerResponse)
+  @UseGuards(JwtAuthGuard)
+  async uploadUserAvatar(@Args('avatar') avatar: string, @Context() ctx) {
+    return await this.userService.updateAvatar(ctx.req.user.userId, avatar);
   }
 }

@@ -10,6 +10,7 @@ import {
 import { Pet } from '../../pets/models/pet.model';
 import { User } from '../../user/models/user.model';
 import { Prescription } from 'src/prescription/models/prescription.model';
+import { Review } from 'src/review/models/review.model';
 
 @ObjectType()
 @Entity()
@@ -76,4 +77,7 @@ export class Appointment {
 
   @Field(() => Prescription, { nullable: true })
   prescription: Prescription;
+
+  @Field(() => Review, { nullable: true })
+  review: Review;
 }

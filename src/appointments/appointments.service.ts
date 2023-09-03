@@ -19,6 +19,7 @@ import { ArrayOfNumbersResponse } from '../shared/ArrayOfNumbers.response';
 import { ContactObject } from './dtos/contact.model';
 import { VetInfo } from 'src/vet_infos/models/vet_info.model';
 import { Prescription } from 'src/prescription/models/prescription.model';
+import { Review } from 'src/review/models/review.model';
 
 @Injectable()
 export class AppointmentsService {
@@ -36,6 +37,8 @@ export class AppointmentsService {
     @InjectRepository(Prescription)
     private prescriptionRepository: Repository<Prescription>,
 
+    @InjectRepository(Review)
+    private reviewRepository: Repository<Review>,
   ) {}
 
   async findAllOfVet(user: any): Promise<Appointment[]> {
@@ -54,7 +57,6 @@ export class AppointmentsService {
     if (user.role === 'VET') {
       const today = new Date();
       const startOfToday = new Date(
-
         today.getUTCFullYear(),
         today.getUTCMonth(),
         today.getUTCDate(),
@@ -71,7 +73,7 @@ export class AppointmentsService {
         59,
       );
 
-      console.log(Between(startOfToday, endOfToday))
+      console.log(Between(startOfToday, endOfToday));
 
       // Find all appointments where the date is today and the vetId is the vetId of the user
       const res = await this.appointmentRepository.find({
@@ -89,9 +91,6 @@ export class AppointmentsService {
     }
     return [];
   }
-
-
-
 
   async findUpcomingsOfUser(userId: string): Promise<Appointment[]> {
     const today = new Date();
@@ -165,22 +164,40 @@ export class AppointmentsService {
       res.zoomLink = contactInfo.zoomLink;
     }
 
-    const prescriptionResponse = await this.prescriptionRepository.findOne(
-      {
+    const prescriptionResponse = await this.prescriptionRepository.findOne({
+      where: {
+        appointmentId: apptId,
+      },
+    });
+
+    const today = new Date();
+
+    const startOfToday = new Date(
+      today.getUTCFullYear(),
+      today.getUTCMonth(),
+      today.getUTCDate(),
+      0,
+      0,
+      0,
+    );
+
+    if (res.date < startOfToday) {
+      const review = await this.reviewRepository.findOne({
         where: {
-          appointmentId : apptId
-        }
+          appointmentId: apptId,
+        },
+      });
+
+      if (review) {
+        res.review = review;
       }
-    )
+    }
 
-
-    if(prescriptionResponse)
-    {
-      res.prescription=prescriptionResponse;
+    if (prescriptionResponse) {
+      res.prescription = prescriptionResponse;
     }
 
     return res;
-
   }
 
   async findById(appointmentId: string): Promise<Appointment> {
@@ -191,27 +208,19 @@ export class AppointmentsService {
       relations: {
         pet: true,
         owner: true,
-        vet: true
+        vet: true,
       },
     });
 
+    const prescriptionResponse = await this.prescriptionRepository.findOne({
+      where: {
+        appointmentId,
+      },
+    });
 
-    const prescriptionResponse = await this.prescriptionRepository.findOne(
-      {
-        where: {
-          appointmentId
-        }
-      }
-    )
-
-
-    if(prescriptionResponse)
-    {
-      res.prescription=prescriptionResponse;
+    if (prescriptionResponse) {
+      res.prescription = prescriptionResponse;
     }
-
-
-
 
     return res;
   }

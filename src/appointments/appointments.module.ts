@@ -7,6 +7,7 @@ import { Appointment_Slot } from './models/appointment_slot.model';
 import { Updated_Appointment_Slot } from './models/updated_appointment_slot';
 import { VetInfo } from 'src/vet_infos/models/vet_info.model';
 import { Prescription } from 'src/prescription/models/prescription.model';
+import { Review } from 'src/review/models/review.model';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { Prescription } from 'src/prescription/models/prescription.model';
       Appointment_Slot,
       Updated_Appointment_Slot,
       VetInfo,
-      Prescription
+      Prescription,
+      Review,
     ]),
   ],
   providers: [AppointmentsResolver, AppointmentsService],

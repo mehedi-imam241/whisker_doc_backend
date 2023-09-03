@@ -1,27 +1,72 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { Review } from './models/review.model';
 import { ServerResponse } from '../shared/operation.response';
+import { InjectRepository } from '@nestjs/typeorm';
+import { In, Repository } from 'typeorm';
+import { CreateReviewInput } from './dtos/create_review.input';
+import { VetInfo } from 'src/vet_infos/models/vet_info.model';
 
 @Injectable()
 export class ReviewService {
-  constructor(@InjectModel(Review.name) private userModel: Model<Review>) {}
+  constructor(
+    @InjectRepository(Review)
+    private reviewRepository: Repository<Review>,
 
-  async createReview(review: string, userId: string) {
-    console.log('review', review);
-    console.log('userId', userId);
-    const createdReview = new this.userModel({
-      review: review,
-      userId: userId,
-    });
-    await createdReview.save();
-    return {
-      message: 'Review created successfully',
-    } as ServerResponse;
+    @InjectRepository(VetInfo)
+    private vetInfoRepository: Repository<VetInfo>,
+  ) {}
+
+  async createReview(review: CreateReviewInput, userId: string) {
+    try {
+      const createdReview = new Review({
+        ...review,
+        userId: userId,
+      });
+
+      await this.reviewRepository.save(createdReview);
+
+      const vetInfo = await this.vetInfoRepository.findOne({
+        where: {
+          vetId: review.vetId,
+        },
+      });
+
+      await this.vetInfoRepository.save({
+        ...vetInfo,
+        sumRating: createdReview.rating + vetInfo.sumRating,
+        ratingCount: vetInfo.ratingCount + 1,
+      });
+
+      return {
+        success: true,
+        message: 'Review created successfully',
+      } as ServerResponse;
+    } catch (error) {
+      console.log(error);
+      return {
+        success: false,
+        message: 'Review creation failed',
+      } as ServerResponse;
+    }
   }
 
-  async findAll(limit: number, skip: number): Promise<Review[]> {
-    return await this.userModel.find().limit(limit).skip(skip).exec();
+  async findReviewsByVetId(vetId: string) {
+    const res = await this.reviewRepository.find({
+      where: {
+        vetId: vetId,
+      },
+      relations: {
+        user: true,
+      },
+    });
+    return res;
+  }
+
+  async findReviewByAppointmentId(apptId: string) {
+    return await this.reviewRepository.findOne({
+      where: {
+        appointmentId: apptId,
+      },
+    });
   }
 }

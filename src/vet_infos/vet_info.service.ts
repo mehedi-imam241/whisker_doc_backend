@@ -3,17 +3,19 @@ import { VetInfo } from './models/vet_info.model';
 import { VetInfoInput } from './dtos/vet_info.input';
 import { ServerResponse } from '../shared/operation.response';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import axios from 'axios';
-import { LocationInput } from './dtos/location.input';
 import { SortByInput } from './dtos/sort_by.input';
+import { Appointment } from 'src/appointments/models/appointment.model';
 
 @Injectable()
 export class VetInfoService {
   constructor(
     @InjectRepository(VetInfo)
     private VetInfoRepository: Repository<VetInfo>,
-  ) { }
+    @InjectRepository(Appointment)
+    private appointmentRepository: Repository<Appointment>,
+  ) {}
 
   // async createVerificationRequest(input: VetInfoInput, user: any) {
   //   const response = new ServerResponse();
@@ -117,42 +119,74 @@ export class VetInfoService {
     });
   }
 
-  async getVetsByLocation(location: LocationInput, keep: number, skip: number, sort_by: SortByInput): Promise<VetInfo[]> {
+  async getVetsByLocation(
+    keep: number,
+    skip: number,
+    sort_by: SortByInput,
+  ): Promise<VetInfo[]> {
     const allVetInfos = await this.VetInfoRepository.find({
       relations: {
         vet: true,
+      },
+    });
+
+    if (sort_by.sortBy === 'DISTANCE' || sort_by.sortBy === 'DURATION') {
+      let locationSearchString = `http://router.project-osrm.org/table/v1/driving/${sort_by.lng},${sort_by.lat}`;
+
+      allVetInfos.forEach((vetInfo) => {
+        locationSearchString += `;${vetInfo.location.lng},${vetInfo.location.lat}`;
+      });
+
+      locationSearchString += '?sources=0&destinations=';
+
+      for (let i = 1; i < allVetInfos.length + 1; i++) {
+        if (i > 1) locationSearchString += ';';
+        locationSearchString += `${i}`;
       }
-    });
-    let locationSearchString = `http://router.project-osrm.org/table/v1/driving/${location.lng},${location.lat}`;
 
-    allVetInfos.forEach((vetInfo) => {
-      locationSearchString += `;${vetInfo.location.lng},${vetInfo.location.lat}`;
-    });
+      locationSearchString += '&annotations=distance,duration';
 
-    locationSearchString += '?sources=0&destinations=';
+      const res = await axios.get(locationSearchString);
 
-    for (let i = 1; i < allVetInfos.length + 1; i++) {
-      if (i > 1)
-        locationSearchString += ';';
-      locationSearchString += `${i}`;
+      allVetInfos.forEach((vetInfo) => {
+        vetInfo.duration = res.data.durations[0][allVetInfos.indexOf(vetInfo)];
+        vetInfo.distance = res.data.distances[0][allVetInfos.indexOf(vetInfo)];
+      });
     }
 
-    locationSearchString += '&annotations=distance,duration';
-
-    const res = await axios.get(locationSearchString);
-
-    // console.log(res.data);
-    allVetInfos.forEach((vetInfo) => {
-      vetInfo.duration = res.data.durations[0][allVetInfos.indexOf(vetInfo)];
-      vetInfo.distance = res.data.distances[0][allVetInfos.indexOf(vetInfo)];
-    });
-
+    for (let i = 0; i < allVetInfos.length; i++) {
+      const vetInfo = allVetInfos[i];
+      const today = new Date();
+      const date = new Date(
+        today.getUTCFullYear(),
+        today.getUTCMonth(),
+        today.getUTCDate(),
+        0,
+        0,
+        0,
+      );
+      vetInfo.apptCount = await this.appointmentRepository.count({
+        where: { vetId: vetInfo.vetId, date: LessThan(date) },
+      });
+    }
 
     if (sort_by.sortBy === 'DISTANCE') {
       allVetInfos.sort((a, b) => a.distance - b.distance);
-    }
-    else
+    } else if (sort_by.sortBy === 'DURATION')
       allVetInfos.sort((a, b) => a.duration - b.duration);
+    else if (sort_by.sortBy === 'RATINGS')
+      allVetInfos.sort((a, b) => {
+        if (a.ratingCount === 0) {
+          return 1;
+        }
+        if (b.ratingCount === 0) {
+          return -1;
+        }
+        return b.sumRating / b.ratingCount - a.sumRating / a.ratingCount;
+      });
+    else if (sort_by.sortBy === 'EXPERIENCE') {
+      allVetInfos.sort((a, b) => b.apptCount - a.apptCount);
+    }
 
     return allVetInfos.slice(skip, skip + keep);
   }

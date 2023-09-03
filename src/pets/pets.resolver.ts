@@ -31,4 +31,18 @@ export class PetsResolver {
   async getPetById(@Args('id') id: string, @Context() ctx): Promise<Pet> {
     return await this.petsService.findById(id, ctx.req.user.userId);
   }
+
+  @Mutation(() => ServerResponse)
+  @UseGuards(JwtAuthGuard)
+  async uploadPetAvatar(
+    @Args('avatar') avatar: string,
+    @Args('petId') petId: string,
+    @Context() ctx,
+  ) {
+    return await this.petsService.uploadAvatar(
+      ctx.req.user.userId,
+      petId,
+      avatar,
+    );
+  }
 }
