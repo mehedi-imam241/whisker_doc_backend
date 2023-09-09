@@ -155,6 +155,10 @@ type ArrayOfNumbersResponse {
   ids: [Float!]
 }
 
+type CountObject {
+  count: Float!
+}
+
 type Slots {
   _id: String!
   starts_at: String!
@@ -187,6 +191,7 @@ type Query {
   getBlogs(take: Float!, skip: Float!): [Blog!]!
   getBlogById(id: String!): Blog!
   countPages: Float!
+  getAllPaymentItems: ServerResponse!
   getSubscriptionStatus: StatusOutput!
   getAllPets: [Pet!]!
   getPetById(id: String!): Pet!
@@ -200,6 +205,7 @@ type Query {
   getAppointmentSlotsOfMe: [Appointment!]
   getPreviousAppointmentSlotsOfMe: [Appointment!]
   getAppointmentDetails(apptId: String!): Appointment
+  getAppointmentCountOfVet: CountObject!
   getMyInfo: VetInfo
   getVetInfo(vetId: String!): VetInfo
   getAllVetsByLocation(limit: Float!, skip: Float!, sort_by: SortByInput!): [VetInfo!]!
@@ -220,6 +226,7 @@ enum SORT_BY {
   DURATION
   RATINGS
   EXPERIENCE
+  LASTNAME
 }
 
 type Mutation {
@@ -229,6 +236,7 @@ type Mutation {
   register(input: RegisterInput!): User!
   createSubscription: ServerResponse!
   resumeSubscription: ServerResponse!
+  createPaymentMethod: ServerResponse!
   createPet(input: CreatePetInput!): ServerResponse!
   uploadPetAvatar(avatar: String!, petId: String!): ServerResponse!
   bookAppointment(input: BookAppointmentInput!): ServerResponse!

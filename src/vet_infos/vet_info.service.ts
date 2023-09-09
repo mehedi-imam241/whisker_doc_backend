@@ -186,6 +186,18 @@ export class VetInfoService {
       });
     else if (sort_by.sortBy === 'EXPERIENCE') {
       allVetInfos.sort((a, b) => b.apptCount - a.apptCount);
+    } else if (sort_by.sortBy === 'LASTNAME') {
+      allVetInfos.sort((a, b) => {
+        const lastNameA = a.vet.name.split(' ')[1] || '';
+        const lastNameB = b.vet.name.split(' ')[1] || '';
+        if (lastNameA < lastNameB) {
+          return -1;
+        }
+        if (lastNameA > lastNameB) {
+          return 1;
+        }
+        return 0;
+      });
     }
 
     return allVetInfos.slice(skip, skip + keep);

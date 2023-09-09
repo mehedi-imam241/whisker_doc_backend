@@ -28,6 +28,21 @@ export class SubscriptionResolver {
     return { message: 'Subscription resumed successfully' } as ServerResponse;
   }
 
+  @Mutation(() => ServerResponse)
+  @UseGuards(JwtAuthGuard)
+  async createPaymentMethod() {
+    const returnval = await this.subscriptionService.createPaymentMethod();
+    console.log(returnval);
+    return { message: 'Subscription resumed successfully' } as ServerResponse;
+  }
+
+  @Query(() => ServerResponse)
+  async getAllPaymentItems() {
+    const returnval = await this.subscriptionService.getAllPaymentItems();
+    console.log(returnval);
+    return { message: 'Subscription resumed successfully' } as ServerResponse;
+  }
+
   @Query(() => StatusOutput)
   @UseGuards(JwtAuthGuard)
   async getSubscriptionStatus() {

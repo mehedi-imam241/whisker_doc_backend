@@ -1,5 +1,13 @@
 version: "3.9"
 services:
+  mongo_db:
+    container_name: mongo_db_container
+    image: mongo:latest
+    restart: always
+    ports:
+      - "4042:27017"
+    volumes:
+      - mongo-db:/data/db
 
   postgres:
     #    container_name: postgres_container
@@ -53,18 +61,19 @@ services:
       PORT: 4040
       SOCKET_PORT: 8080
       #we can pass the service name or the container name of mongodb
+      DB_HOST: mongodb://mongo_db:27017
+      DB_NAME: whisker_doc
+      #      POSTGRES_USER: postgres
+      #      POSTGRES_PASSWORD: 123456
+      #      POSTGRES_DB: whisker_doc
+      #      POSTGRES_HOST: postgres
+      #      POSTGRES_PORT: 5432
 
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: whisker_doc
-      POSTGRES_HOST: postgres
+      POSTGRES_PASSWORD: asif_shahriar
+      POSTGRES_DB: postgres
+      POSTGRES_HOST: db.vuvqdveucdpqnivmmwpt.supabase.co
       POSTGRES_PORT: 5432
-
-      # POSTGRES_USER: postgres
-      # POSTGRES_PASSWORD: asif_shahriar
-      # POSTGRES_DB: postgres
-      # POSTGRES_HOST: db.vuvqdveucdpqnivmmwpt.supabase.co
-      # POSTGRES_PORT: 5432
 
 
 

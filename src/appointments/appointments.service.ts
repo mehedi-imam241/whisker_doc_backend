@@ -20,6 +20,7 @@ import { ContactObject } from './dtos/contact.model';
 import { VetInfo } from 'src/vet_infos/models/vet_info.model';
 import { Prescription } from 'src/prescription/models/prescription.model';
 import { Review } from 'src/review/models/review.model';
+import { CountObject } from './dtos/count.out';
 
 @Injectable()
 export class AppointmentsService {
@@ -529,6 +530,31 @@ export class AppointmentsService {
 
     // const result = getValuesNotInArrayInRange(slots, 0, 12);
     // console.log(result);
+  }
+
+  async completedAppointmentsOfVet(vetId: string): Promise<CountObject> {
+    const today = new Date();
+    const startOfToday = new Date(
+      today.getUTCFullYear(),
+      today.getUTCMonth(),
+      today.getUTCDate(),
+      today.getUTCHours(),
+      0,
+      0,
+    );
+
+    const res = await this.appointmentRepository.count({
+      where: {
+        vetId,
+        date: LessThan(startOfToday),
+      },
+      relations: {
+        pet: true,
+        owner: true,
+      },
+    });
+
+    return { count: res } as CountObject;
   }
 
   //   async getZoomLinkOfVet(vetId: string) {

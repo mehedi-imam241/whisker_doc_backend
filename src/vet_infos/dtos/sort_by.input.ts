@@ -17,6 +17,7 @@ enum SORT_BY {
   DURATION = 'DURATION',
   RATINGS = 'RATINGS',
   EXPERIENCE = 'EXPERIENCE',
+  LASTNAME = 'LASTNAME',
 }
 
 registerEnumType(SORT_BY, {

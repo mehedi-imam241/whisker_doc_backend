@@ -21,6 +21,42 @@ export class SubscriptionService {
     });
   }
 
+  async createPaymentMethod() {
+    return await this.stripe.paymentMethods.create({
+      type: 'card',
+      card: {
+        number: '4242424242424242',
+        exp_month: 12,
+        exp_year: 2030,
+        cvc: '123',
+      },
+    });
+  }
+
+  async addPaymentMethodToCustomer(customerId: string) {
+    return await this.stripe.paymentMethods.attach(
+      'pm_1NUUonCEAeaWr2ZssIeqBwk0',
+      {
+        customer: 'cus_OH39FkumO7WxjO',
+      },
+    );
+  }
+
+  async retrieveCustomer(customerId: string) {
+    return await this.stripe.customers.retrieve('cus_OH39FkumO7WxjO');
+  }
+  async getAllPaymentItems() {
+    return await this.stripe.products.list({
+      active: true,
+      limit: 10,
+    });
+
+    // return await this.stripe.prices.list({
+    //   active: true,
+    //   limit: 10,
+    // });
+  }
+
   async createSubscription(customerId: string, priceId: string) {
     return await this.stripe.subscriptions.create({
       customer: 'cus_OH39FkumO7WxjO',
@@ -31,6 +67,17 @@ export class SubscriptionService {
   async retrieveSubscription(subscriptionId: string) {
     return await this.stripe.subscriptions.retrieve(
       'sub_1NUV46CEAeaWr2ZsEVSN62uK',
+    );
+  }
+
+  async pauseSubscription(subscriptionId: string) {
+    return await this.stripe.subscriptions.update(
+      'sub_1NUV46CEAeaWr2ZsEVSN62uK',
+      {
+        pause_collection: {
+          behavior: 'void',
+        },
+      },
     );
   }
 

@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -20,7 +21,7 @@ export class Review {
   }
 
   @Field(() => Number)
-  @PrimaryGeneratedColumn('increment')
+  @PrimaryGeneratedColumn('uuid')
   _id: number;
 
   @Field(() => String)
@@ -28,7 +29,7 @@ export class Review {
   vetId: string;
 
   @Field(() => User)
-  @OneToOne(() => User)
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'vetId' })
   vet: User;
 
@@ -37,12 +38,12 @@ export class Review {
   userId: string;
 
   @Field(() => User)
-  @OneToOne(() => User)
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })
   user: User;
 
   @Field(() => String)
-  @Column({ type: 'varchar', unique: true })
+  @Column({ type: 'varchar' })
   appointmentId: string;
 
   @Field(() => String)

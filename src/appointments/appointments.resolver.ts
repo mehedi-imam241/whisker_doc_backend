@@ -12,6 +12,7 @@ import {
 import { Appointment_Slot } from './models/appointment_slot.model';
 import { ArrayOfNumbersResponse } from '../shared/ArrayOfNumbers.response';
 import { ContactObject } from './dtos/contact.model';
+import { CountObject } from './dtos/count.out';
 
 @Resolver()
 export class AppointmentsResolver {
@@ -139,11 +140,18 @@ export class AppointmentsResolver {
     );
   }
 
-
   @Query(() => Appointment, { nullable: true })
   @UseGuards(JwtAuthGuard)
   async getAppointmentDetails(@Args('apptId') apptId: string) {
     return await this.appointmentsService.findDetailsOfAppointment(apptId);
+  }
+
+  @Query(() => CountObject)
+  @UseGuards(JwtAuthGuard)
+  async getAppointmentCountOfVet(@Context() ctx) {
+    return await this.appointmentsService.completedAppointmentsOfVet(
+      ctx.req.user.userId,
+    );
   }
 
   // @Query(() => ContactObject, { nullable: true })

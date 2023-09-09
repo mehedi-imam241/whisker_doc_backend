@@ -87,12 +87,12 @@ export class PetsService {
       });
 
       return {
-        succcess: true,
+        success: true,
         message: 'Avatar uploaded successfully',
       } as ServerResponse;
     } catch (e) {
       return {
-        succcess: false,
+        success: false,
         message: e,
       } as ServerResponse;
     }

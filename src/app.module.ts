@@ -6,7 +6,6 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { UserModule } from './user/user.module';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { ChatModule } from './chat/chat.module';
-import { MongooseModule } from '@nestjs/mongoose';
 import { BlogModule } from './blog/blog.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
@@ -37,6 +36,8 @@ import { Updated_Appointment_Slot } from './appointments/models/updated_appointm
 import { ContactObject } from './appointments/dtos/contact.model';
 import { Prescription } from './prescription/models/prescription.model';
 import { Review } from './review/models/review.model';
+import { UserInfosModule } from './user_infos/user_infos.module';
+import { UserInfo } from './user_infos/models/user_infos.model';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { Review } from './review/models/review.model';
         Pet,
         Appointment,
         Blog,
+        UserInfo,
         VetInfo,
         HomeService,
         Date_schedule,
@@ -85,13 +87,14 @@ import { Review } from './review/models/review.model';
     AppointmentsModule,
     SearchModule,
     VetInfoModule,
-    // SubscriptionModule,
+    SubscriptionModule,
     ReviewModule,
     // ReviewVetsModule,
     PrescriptionModule,
     // HomeServiceModule,
     // SymptomsModule,
     SchedulerModule,
+    UserInfosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
