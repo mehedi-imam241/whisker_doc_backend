@@ -75,9 +75,7 @@ import { Review } from './review/models/review.model';
         Review,
       ],
     }),
-    // MongooseModule.forRoot(process.env.DB_HOST, {
-    //   dbName: process.env.DB_NAME,
-    // }),
+
     ScheduleModule.forRoot(),
     UserModule,
     // ChatModule,

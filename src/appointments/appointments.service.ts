@@ -418,6 +418,7 @@ export class AppointmentsService {
       0,
       0,
     );
+
     const endOfToday = new Date(
       today.getFullYear(),
       today.getMonth(),
