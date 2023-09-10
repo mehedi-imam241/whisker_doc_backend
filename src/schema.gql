@@ -16,7 +16,7 @@ type SearchResponse {
 }
 
 type ServerResponse {
-  message: String!
+  message: String
   success: Boolean
 }
 
@@ -32,21 +32,34 @@ type LoginResponseDto {
   accessToken: String!
 }
 
+type ProductObject {
+  id: String!
+  name: String!
+  default_price: String!
+  description: String!
+  images: [String!]!
+  My_Price: Float!
+}
+
 type plan {
   id: String!
-  object: String!
   active: Boolean!
   amount: Float!
+  product: ProductObject!
 }
 
 type StatusOutput {
   id: String!
-  object: String!
   currency: String!
   current_period_end: Float!
   current_period_start: Float!
-  customer: String!
+  canceled_at: Float
   plan: plan!
+}
+
+type SubscriptionCreateObject {
+  subscriptionId: String!
+  clientSecret: String!
 }
 
 type Medicine {
@@ -159,6 +172,23 @@ type CountObject {
   count: Float!
 }
 
+type Symptoms {
+  tags: [String!]!
+  _id: Float!
+  species: String!
+  vetId: String!
+  vet: User
+  verifiedById: String
+  verifiedBy: User
+  title: String!
+  article: String!
+}
+
+type TagSearchResponse {
+  Symptom: String!
+  Disease: String!
+}
+
 type Slots {
   _id: String!
   starts_at: String!
@@ -191,8 +221,9 @@ type Query {
   getBlogs(take: Float!, skip: Float!): [Blog!]!
   getBlogById(id: String!): Blog!
   countPages: Float!
-  getAllPaymentItems: ServerResponse!
-  getSubscriptionStatus: StatusOutput!
+  getAllProducts: [ProductObject!]!
+  getSubscriptionStatus: [StatusOutput!]
+  checkIfSubscriptionActive: ServerResponse!
   getAllPets: [Pet!]!
   getPetById(id: String!): Pet!
   getAllAppointmentsOfVet: [Appointment!]!
@@ -212,6 +243,11 @@ type Query {
   findReviewsByVetId(vetId: String!): [Review!]!
   findMyReviews: [Review!]!
   findReviewByAppointmentId(apptId: String!): Review!
+  searchSymptoms(input: SearchSymptomsInput!): [Symptoms!]!
+  searchSymptomsTags(input: String!): [TagSearchResponse!]!
+  getVerfiedSymptoms(limit: Float!, skip: Float!): [Symptoms!]!
+  getUnverfiedSymptoms(limit: Float!, skip: Float!): [Symptoms!]!
+  getSymptomsById(symptomsId: Float!): Symptoms!
   getHomeServiceVets(limit: Float!, skip: Float!): [HomeService!]!
 }
 
@@ -229,14 +265,18 @@ enum SORT_BY {
   LASTNAME
 }
 
+input SearchSymptomsInput {
+  species: String!
+  tags: [String!]!
+}
+
 type Mutation {
   uploadUserAvatar(avatar: String!): ServerResponse!
   createBlog(input: CreateBlogInput!): ServerResponse!
   login(loginInput: LoginInput!): LoginResponseDto!
   register(input: RegisterInput!): User!
-  createSubscription: ServerResponse!
-  resumeSubscription: ServerResponse!
-  createPaymentMethod: ServerResponse!
+  createSubscription(priceId: String!): SubscriptionCreateObject!
+  cancelSubscription(subscriptionId: String!): ServerResponse!
   createPet(input: CreatePetInput!): ServerResponse!
   uploadPetAvatar(avatar: String!, petId: String!): ServerResponse!
   bookAppointment(input: BookAppointmentInput!): ServerResponse!
@@ -247,6 +287,8 @@ type Mutation {
   createReview(review: CreateReviewInput!): ServerResponse!
   createPrescription(input: CreatePrescription!): ServerResponse!
   createPrescription2(input: CreatePrescription2!): Prescription!
+  createSymptoms(input: CreateSymptomsInput!): ServerResponse!
+  verifySymptoms(symptomsId: Float!): ServerResponse!
   JoinHomeService: ServerResponse!
 }
 
@@ -353,4 +395,11 @@ input CreatePrescription2 {
   diseases: [String!]!
   medicines: [MedicineInput!]!
   advice: String!
+}
+
+input CreateSymptomsInput {
+  species: String!
+  title: String!
+  article: String!
+  tags: [String!]!
 }

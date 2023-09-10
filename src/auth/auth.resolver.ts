@@ -28,13 +28,9 @@ export class AuthResolver {
   async register(
     @Args('input', { type: () => RegisterInput }) input: RegisterInput,
   ): Promise<User> {
-    // const customer = await this.subscriptionService.createCustomer(
-    //   input.email,
-    //   'paymentmethodId',
-    // );
-    // console.log(customer);
-
     const user = await this.authService.register(input);
+    const res = await this.subscriptionService.createCustomer(user);
+    console.log(res);
     return user;
   }
 }

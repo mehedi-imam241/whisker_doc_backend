@@ -1,15 +1,9 @@
 import { Field, InputType } from '@nestjs/graphql';
 
 @InputType()
-export class CreateSymptomsInput {
+export class SearchSymptomsInput {
   @Field(() => String)
   species: string;
-
-  @Field(() => String)
-  title: string;
-
-  @Field(() => String)
-  article: string;
 
   @Field(() => [String])
   tags: string[];

@@ -25,4 +25,24 @@ export class SearchService {
     });
     return hits.hits.map((drug) => drug._source);
   }
+
+  async searchSymptomsTag(query: string) {
+    const { hits } = await this.esService.search<SearchResponse>({
+      index: 'symptoms1',
+      from: 0,
+      query: {
+        // multi_match: {
+        //   query: query,
+        //   fields: ['Drug'],
+        // },
+        prefix: {
+          Symptom: {
+            value: query,
+            case_insensitive: true,
+          },
+        },
+      },
+    });
+    return hits.hits.map((symptom) => symptom._source);
+  }
 }

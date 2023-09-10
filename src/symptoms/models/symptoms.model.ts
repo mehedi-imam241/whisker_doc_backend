@@ -1,35 +1,57 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
 import { Field, ObjectType } from '@nestjs/graphql';
-
-export type SymptomsDocument = HydratedDocument<Symptoms>;
+import { User } from 'src/user/models/user.model';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  JoinColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @ObjectType()
-@Schema()
+@Entity()
 export class Symptoms {
-  @Field(() => String)
-  _id: string;
+  constructor(fields?: Partial<Symptoms>) {
+    if (fields) {
+      Object.assign(this, fields);
+    }
+  }
+
+  @Field(() => [String])
+  @Column({ type: 'varchar', array: true })
+  tags: string[];
+
+  @Field(() => Number)
+  @PrimaryGeneratedColumn('increment')
+  _id: number;
 
   @Field(() => String)
-  @Prop()
+  @Column({ type: 'varchar', length: 100 })
   species: string;
 
   @Field(() => String)
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Column({ type: 'varchar' })
   vetId: string;
 
-  @Field({ nullable: true })
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  verifiedBy?: string;
+  @Field(() => User, { nullable: true })
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'vetId' })
+  vet: User;
+
+  @Field(() => String, { nullable: true })
+  @Column({ type: 'varchar', nullable: true })
+  verifiedById?: string;
+
+  @Field(() => User, { nullable: true })
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'verifiedById' })
+  verifiedBy: User;
 
   @Field(() => String)
-  @Prop()
+  @Column({ type: 'varchar', length: 100 })
   title: string;
 
   @Field(() => String)
-  @Prop()
+  @Column({ type: 'varchar' })
   article: string;
 }
-
-export const SymptomsSchema = SchemaFactory.createForClass(Symptoms);
-SymptomsSchema.index({ title: 'text', article: 'text' });

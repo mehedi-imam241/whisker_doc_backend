@@ -1,15 +1,12 @@
 import { Module } from '@nestjs/common';
 import { SymptomsService } from './symptoms.service';
 import { SymptomsResolver } from './symptoms.resolver';
-import { Symptoms, SymptomsSchema } from './models/symptoms.model';
-import { MongooseModule } from '@nestjs/mongoose';
+import { Symptoms } from './models/symptoms.model';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { SearchModule } from 'src/search_drug/search.module';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: Symptoms.name, schema: SymptomsSchema },
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([Symptoms]), SearchModule],
 
   providers: [SymptomsService, SymptomsResolver],
 })

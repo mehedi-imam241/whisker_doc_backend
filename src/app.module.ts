@@ -38,6 +38,7 @@ import { Prescription } from './prescription/models/prescription.model';
 import { Review } from './review/models/review.model';
 import { UserInfosModule } from './user_infos/user_infos.module';
 import { UserInfo } from './user_infos/models/user_infos.model';
+import { Symptoms } from './symptoms/models/symptoms.model';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { UserInfo } from './user_infos/models/user_infos.model';
         ContactObject,
         Prescription,
         Review,
+        Symptoms,
       ],
     }),
 
@@ -92,7 +94,7 @@ import { UserInfo } from './user_infos/models/user_infos.model';
     // ReviewVetsModule,
     PrescriptionModule,
     // HomeServiceModule,
-    // SymptomsModule,
+    SymptomsModule,
     SchedulerModule,
     UserInfosModule,
   ],

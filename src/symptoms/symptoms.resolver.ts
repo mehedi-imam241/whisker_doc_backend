@@ -5,15 +5,38 @@ import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwtAuth.guard';
 import { ServerResponse } from '../shared/operation.response';
 import { CreateSymptomsInput } from './dtos/CreateSymptoms.input';
+import { SearchSymptomsInput } from './dtos/SearchSymptoms.input';
+import { TagsInput } from './dtos/Tags.input';
+import { TagSearchResponse } from './dtos/search.response';
 
 @Resolver()
 export class SymptomsResolver {
   constructor(private symptomsService: SymptomsService) {}
 
+  @Mutation(() => ServerResponse)
+  @UseGuards(JwtAuthGuard)
+  async createSymptoms(
+    @Args('input') input: CreateSymptomsInput,
+    @Context() ctx,
+  ) {
+    console.log(input);
+
+    return await this.symptomsService.createSymptoms(
+      input,
+      ctx.req.user.userId,
+    );
+  }
+
   @Query(() => [Symptoms])
   @UseGuards(JwtAuthGuard)
-  async searchSymptoms(@Args('searchTerm') searchTerm: string) {
-    return await this.symptomsService.searchSymptoms(searchTerm);
+  async searchSymptoms(@Args('input') input: SearchSymptomsInput) {
+    return await this.symptomsService.searchSymptoms(input);
+  }
+
+  @Query(() => [TagSearchResponse])
+  @UseGuards(JwtAuthGuard)
+  async searchSymptomsTags(@Args('input') input: string) {
+    return await this.symptomsService.searchSymptomsTags(input);
   }
 
   @Query(() => [Symptoms])
@@ -36,22 +59,16 @@ export class SymptomsResolver {
 
   @Mutation(() => ServerResponse)
   @UseGuards(JwtAuthGuard)
-  async verifySymptoms(@Args('symptomsId') symptomsId: string, @Context() ctx) {
+  async verifySymptoms(@Args('symptomsId') symptomsId: number, @Context() ctx) {
     return await this.symptomsService.verifySymptoms(
       symptomsId,
       ctx.req.user.userId,
     );
   }
 
-  @Mutation(() => ServerResponse)
+  @Query(() => Symptoms)
   @UseGuards(JwtAuthGuard)
-  async createSymptoms(
-    @Args('input') input: CreateSymptomsInput,
-    @Context() ctx,
-  ) {
-    return await this.symptomsService.createSymptoms(
-      input,
-      ctx.req.user.userId,
-    );
+  async getSymptomsById(@Args('symptomsId') symptomsId: number) {
+    return await this.symptomsService.getSymptomsById(symptomsId);
   }
 }
