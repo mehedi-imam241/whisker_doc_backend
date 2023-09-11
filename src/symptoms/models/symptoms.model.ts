@@ -6,6 +6,7 @@ import {
   ManyToOne,
   JoinColumn,
   PrimaryGeneratedColumn,
+  OneToOne,
 } from 'typeorm';
 
 @ObjectType()
@@ -43,7 +44,7 @@ export class Symptoms {
   verifiedById?: string;
 
   @Field(() => User, { nullable: true })
-  @ManyToOne(() => User)
+  @OneToOne(() => User)
   @JoinColumn({ name: 'verifiedById' })
   verifiedBy: User;
 

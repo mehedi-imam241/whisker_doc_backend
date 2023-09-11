@@ -76,6 +76,10 @@ export class SymptomsService {
       where: {
         verifiedById: Not(IsNull()),
       },
+      relations: {
+        vet: true,
+        verifiedBy: true
+      },
       take: limit,
       skip,
     });
