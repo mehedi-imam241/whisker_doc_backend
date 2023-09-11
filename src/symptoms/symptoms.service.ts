@@ -78,7 +78,6 @@ export class SymptomsService {
       },
       relations: {
         vet: true,
-        verifiedBy: true
       },
       take: limit,
       skip,
@@ -105,6 +104,7 @@ export class SymptomsService {
       },
       relations: {
         vet: true,
+        verifiedBy: true,
       },
     });
   }
