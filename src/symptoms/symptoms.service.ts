@@ -36,7 +36,7 @@ export class SymptomsService {
 
     console.log(res);
 
-    return { message: 'Symptoms created successfully' } as ServerResponse;
+    return { message: String(res._id), success: true } as ServerResponse;
   }
 
   async verifySymptoms(symptomsId: number, vetId: string) {
@@ -114,6 +114,10 @@ export class SymptomsService {
       where: {
         tags: ArrayOverlap(input.tags),
         species: ILike('%' + input.species + '%'),
+        verifiedById: Not(IsNull()),
+      },
+      relations: {
+        vet: true,
       },
     });
   }
