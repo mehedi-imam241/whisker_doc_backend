@@ -1,73 +1,137 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# 🐾 WhiskerDoc — Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend API server for **WhiskerDoc**, a pet healthcare platform that connects pet owners with licensed veterinarians for online and in-person appointments.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+🔗 **Frontend:** [whisker_doc_frontend](https://github.com/mehedi-imam241/whisker_doc_frontend)
 
-## Description
+**Tech Stack:** NestJS · GraphQL (Apollo) · MongoDB (Mongoose) · PostgreSQL (TypeORM) · Elasticsearch · Socket.io · Stripe · JWT Auth · Docker
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Installation
+## 🏗️ Architecture
 
-```bash
-$ npm install
+```mermaid
+graph TD
+    Client["Frontend (Next.js)"] -->|GraphQL| API["NestJS API Server :4040"]
+    Client -->|WebSocket| WS["Socket.io :8080"]
+    Client -->|Image Upload| Cloud["Cloudinary"]
+
+    API --> Auth["Auth Module (JWT + Passport)"]
+    API --> Pets["Pets Module"]
+    API --> Appts["Appointments Module"]
+    API --> Rx["Prescription Module"]
+    API --> Blog["Blog Module"]
+    API --> Review["Review Module"]
+    API --> Symptoms["Symptoms Module"]
+    API --> Search["Drug Search Module"]
+    API --> Sub["Subscription Module"]
+    API --> Home["Home Service Module"]
+    API --> VetInfo["Vet Info Module"]
+    API --> Scheduler["Scheduler Module"]
+
+    Auth --> PG[(PostgreSQL)]
+    Pets --> PG
+    Appts --> PG
+    Blog --> PG
+    Rx --> PG
+    Review --> PG
+    Symptoms --> PG
+    VetInfo --> PG
+    Home --> PG
+
+    WS --> Mongo[(MongoDB)]
+
+    Search --> ES[(Elasticsearch)]
+    Sub --> Stripe["Stripe API"]
 ```
 
-## Running the app
+### Data Storage Strategy
+| Database | Used For |
+|----------|----------|
+| **PostgreSQL** | Users, pets, appointments, blogs, prescriptions, reviews, symptoms, vet info, home service |
+| **MongoDB** | Chat messages, vet review aggregations |
+| **Elasticsearch** | Drug search with fuzzy matching |
+| **Cloudinary** | Avatar and image uploads (user, pet, vet) |
+| **Stripe** | Subscription plans and payment processing |
+
+---
+
+## ✨ API Modules
+
+| Module | Description |
+|--------|-------------|
+| **Auth** | JWT-based authentication with role-based access (USER, VET, ADMIN, PARAVET) |
+| **Pets** | CRUD operations for pet profiles (species, breed, age, weight) |
+| **Appointments** | Book online/in-person appointments, manage time slots, cancel bookings |
+| **Prescription** | Vets create prescriptions with symptoms, diseases, medicines, and advice |
+| **Blog** | CRUD blog posts with rich text content |
+| **Review** | Users rate and review vets after appointments |
+| **Symptoms** | Vets write symptom articles; admins verify them; tag-based search |
+| **Drug Search** | Elasticsearch-powered drug lookup with fuzzy matching |
+| **Subscription** | Stripe integration for subscription plans |
+| **Chat** | Real-time messaging via Socket.io |
+| **Home Service** | Vets offer home visit services with date/slot scheduling |
+| **Vet Info** | Vet profiles with location (lat/lng), degree, ratings, Zoom link |
+| **Scheduler** | Cron-based background tasks |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Docker & Docker Compose
+
+### Run with Docker
 
 ```bash
-# development
-$ npm run start
+# Clone the repository
+git clone https://github.com/mehedi-imam241/whisker_doc_backend.git
+cd whisker_doc_backend
 
-# watch mode
-$ npm run start:dev
+# Set your Stripe key
+export STRIPE_API_SECRET_KEY=sk_test_your_key
 
-# production mode
-$ npm run start:prod
+# Start all services (MongoDB, PostgreSQL, Elasticsearch, Kibana, Backend)
+docker compose up -d --build
+
+# View logs
+docker logs -f whisker_doc_backend
 ```
 
-## Test
+### Services & Ports
+
+| Service | Port | Description |
+|---------|------|-------------|
+| Backend API | `4040` | GraphQL endpoint at `/graphql` |
+| WebSocket | `4041` | Socket.io for real-time chat |
+| MongoDB | `4042` | Document database |
+| Elasticsearch | `4043` | Search engine |
+| Kibana | `4044` | ES dashboard |
+| PostgreSQL | `4045` | Relational database |
+
+### Run without Docker
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install --legacy-peer-deps
+npm run start:dev
 ```
 
-## Support
+> Requires MongoDB, PostgreSQL, and Elasticsearch running locally. Set connection details via environment variables.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Environment Variables
 
-## Stay in touch
+| Variable | Description |
+|----------|-------------|
+| `JWT_SECRET` | Secret key for JWT token signing |
+| `PORT` | API server port (default: 4040) |
+| `SOCKET_PORT` | WebSocket port (default: 8080) |
+| `DB_HOST` | MongoDB connection URL |
+| `DB_NAME` | MongoDB database name |
+| `POSTGRES_USER` | PostgreSQL username |
+| `POSTGRES_PASSWORD` | PostgreSQL password |
+| `POSTGRES_DB` | PostgreSQL database name |
+| `POSTGRES_HOST` | PostgreSQL host |
+| `POSTGRES_PORT` | PostgreSQL port |
+| `ELASTICSEARCH_NODE` | Elasticsearch URL |
+| `STRIPE_API_SECRET_KEY` | Stripe secret key for subscriptions |
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).

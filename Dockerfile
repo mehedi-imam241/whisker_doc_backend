@@ -1,7 +1,7 @@
 FROM node:18
 WORKDIR /app
 # set the workdir to /app meaning all commands will be executed from this directory within the container
-COPY package.json .
+COPY package.json package-lock.json ./
 # copy package.json to the workdir
 
 
@@ -11,7 +11,7 @@ COPY package.json .
 #    else npm ci; \
 #    fi
 
-RUN npm install
+RUN npm ci --legacy-peer-deps
 
 # install dependencies
 COPY . ./
